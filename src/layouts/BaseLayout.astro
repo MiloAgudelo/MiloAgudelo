@@ -1,5 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
+import '../styles/global.css';
 
 interface Props {
   title: string;
@@ -16,7 +17,7 @@ const basePath = lang === 'es'
   : Astro.url.pathname.replace(new RegExp(`^/${lang}(?=/|$)`), '') || '/';
 ---
 
-<html lang={lang}>
+<html lang={lang} class="bg-[#0d1b2a] select-none">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
