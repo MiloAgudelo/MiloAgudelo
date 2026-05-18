@@ -1,4 +1,13 @@
 {
-  "recommendations": ["astro-build.astro-vscode"],
+  "recommendations": [
+    "astro-build.astro-vscode",
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "lirobi.phone-preview",
+    "naumovs.color-highlight",
+    "pkief.material-icon-theme",
+    "yzhang.markdown-all-in-one"
+  ],
   "unwantedRecommendations": []
 }

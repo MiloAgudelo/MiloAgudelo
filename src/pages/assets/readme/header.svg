@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 180" width="900">
+  <style>
+    .page-bg { fill: #0D1117; }
+    @media (prefers-color-scheme: light) { .page-bg { fill: #ffffff; } }
+  </style>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0D1B2A"/>
+      <stop offset="50%" stop-color="#162447"/>
+      <stop offset="100%" stop-color="#1F4068"/>
+    </linearGradient>
+
+    <clipPath id="c1">
+      <rect x="307" y="112" height="24">
+        <animate attributeName="width"
+          values="0;286;286;0;0"
+          keyTimes="0;0.071;0.179;0.232;1"
+          dur="28s" repeatCount="indefinite" begin="-3s"/>
+      </rect>
+    </clipPath>
+    <clipPath id="c2">
+      <rect x="312" y="112" height="24">
+        <animate attributeName="width"
+          values="0;0;275;275;0;0"
+          keyTimes="0;0.25;0.321;0.429;0.482;1"
+          dur="28s" repeatCount="indefinite" begin="-3s"/>
+      </rect>
+    </clipPath>
+    <clipPath id="c3">
+      <rect x="282" y="112" height="24">
+        <animate attributeName="width"
+          values="0;0;337;337;0;0"
+          keyTimes="0;0.5;0.571;0.679;0.732;1"
+          dur="28s" repeatCount="indefinite" begin="-3s"/>
+      </rect>
+    </clipPath>
+    <clipPath id="c4">
+      <rect x="287" y="112" height="24">
+        <animate attributeName="width"
+          values="0;0;326;326;0;0"
+          keyTimes="0;0.75;0.821;0.929;0.982;1"
+          dur="28s" repeatCount="indefinite" begin="-3s"/>
+      </rect>
+    </clipPath>
+  </defs>
+
+  <!-- Fondo de página (dark/light) -->
+  <rect width="900" height="180" class="page-bg"/>
+
+  <!-- Fondo gradiente completo -->
+  <rect width="900" height="180" fill="url(#bg)"/>
+
+  <!-- Ola decorativa suave -->
+  <path d="M0,145 C150,133 300,155 450,145 C600,135 750,155 900,145 L900,152 C750,162 600,142 450,152 C300,162 150,140 0,152 Z" fill="rgba(255,255,255,0.06)"/>
+
+  <!-- Color de página debajo de la ola principal -->
+  <path d="M0,152 C150,140 300,162 450,152 C600,142 750,162 900,152 L900,180 L0,180 Z" class="page-bg"/>
+
+  <!-- Estrellas animadas -->
+  <circle cx="48"  cy="28" r="1.2" fill="white">
+    <animate attributeName="opacity" values="0.1;0.6;0.1" dur="2.8s" repeatCount="indefinite" begin="0s"/>
+  </circle>
+  <circle cx="140" cy="14" r="1" fill="white">
+    <animate attributeName="opacity" values="0.2;0.7;0.2" dur="3.5s" repeatCount="indefinite" begin="1.1s"/>
+  </circle>
+  <circle cx="270" cy="38" r="1.5" fill="white">
+    <animate attributeName="opacity" values="0.1;0.5;0.1" dur="4.1s" repeatCount="indefinite" begin="0.4s"/>
+  </circle>
+  <circle cx="490" cy="18" r="1" fill="white">
+    <animate attributeName="opacity" values="0.15;0.55;0.15" dur="2.3s" repeatCount="indefinite" begin="1.8s"/>
+  </circle>
+  <circle cx="630" cy="30" r="1.2" fill="white">
+    <animate attributeName="opacity" values="0.1;0.65;0.1" dur="3.9s" repeatCount="indefinite" begin="0.7s"/>
+  </circle>
+  <circle cx="760" cy="12" r="1" fill="white">
+    <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2.6s" repeatCount="indefinite" begin="2.2s"/>
+  </circle>
+  <circle cx="855" cy="42" r="1.5" fill="white">
+    <animate attributeName="opacity" values="0.1;0.5;0.1" dur="4.4s" repeatCount="indefinite" begin="0.3s"/>
+  </circle>
+  <circle cx="820" cy="20" r="1" fill="white">
+    <animate attributeName="opacity" values="0.15;0.6;0.15" dur="3.2s" repeatCount="indefinite" begin="1.5s"/>
+  </circle>
+
+  <!-- Title -->
+  <text x="450" y="70"
+    font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif"
+    font-size="46" font-weight="800" fill="white" text-anchor="middle">Milo Agudelo</text>
+
+  <!-- Subtitle -->
+  <text x="450" y="100"
+    font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif"
+    font-size="13.5" fill="white" text-anchor="middle" letter-spacing="0.2">
+    Full Stack Developer | Constructor de impacto social | Diseñador UI/UX
+  </text>
+
+  <!-- Typing lines -->
+  <text x="307" y="132" clip-path="url(#c1)"
+    font-family="'Courier New',Courier,monospace"
+    font-size="17" fill="white">Ganador TINKU Hackathon 2026</text>
+
+  <text x="312" y="132" clip-path="url(#c2)"
+    font-family="'Courier New',Courier,monospace"
+    font-size="17" fill="white">Tech para el impacto social</text>
+
+  <text x="282" y="132" clip-path="url(#c3)"
+    font-family="'Courier New',Courier,monospace"
+    font-size="17" fill="white">Dise&#241;o e Ingenier&#237;a con prop&#243;sito</text>
+
+  <text x="287" y="132" clip-path="url(#c4)"
+    font-family="'Courier New',Courier,monospace"
+    font-size="17" fill="white">Liderando proyectos que importan</text>
+
+  <!-- Cursor parpadeante -->
+  <text y="132"
+    font-family="'Courier New',Courier,monospace"
+    font-size="17" fill="white">
+    <animate attributeName="x"
+      values="307;593;593;307;312;588;588;312;282;618;618;282;287;613;613;287;307"
+      keyTimes="0;0.071;0.179;0.232;0.25;0.321;0.429;0.482;0.5;0.571;0.679;0.732;0.75;0.821;0.929;0.982;1"
+      dur="28s" repeatCount="indefinite" begin="-3s"/>
+    <animate attributeName="opacity"
+      values="1;0;1;0"
+      keyTimes="0;0.5;0.5;1"
+      dur="0.9s" repeatCount="indefinite"/>
+    |
+  </text>
+</svg>
