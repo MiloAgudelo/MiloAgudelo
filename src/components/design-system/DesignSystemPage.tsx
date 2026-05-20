@@ -1,0 +1,546 @@
+import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
+import { Bubbles } from './Bubbles';
+import '@/styles/design-system.css';
+
+import { HugeiconsIcon } from '@hugeicons/react';
+import {
+  Home01Icon,
+  Mail01Icon,
+  CodeIcon,
+  User02Icon,
+  Calendar01Icon,
+  FolderOpenIcon,
+  ArrowRight01Icon,
+  Briefcase01Icon,
+  StarIcon,
+  GridViewIcon,
+  Link01Icon,
+  PaintBrush01Icon,
+  Globe02Icon,
+  Search01Icon,
+  Layers01Icon,
+  Chat01Icon,
+  Camera01Icon,
+  BinocularsIcon,
+  MountainIcon,
+  TentIcon,
+  Compass01Icon,
+  MapPinIcon,
+} from '@hugeicons/core-free-icons';
+
+/* ── Animation ───────────────────────────────────────────────── */
+
+const fadeUp = (i = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { delay: i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+});
+
+/* ── Bento card shell ────────────────────────────────────────── */
+
+function BentoCard({
+  children,
+  className = '',
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className={`relative h-full overflow-hidden rounded-[28px] border border-white/70 bg-gradient-to-b from-white/95 to-white/75 p-6 backdrop-blur-sm ${className}`}
+      style={{ boxShadow: 'var(--sombra-suave), var(--sombra-glass)', ...style }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ── Card label ──────────────────────────────────────────────── */
+
+function Label({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
+      {children}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERSONAL ICON PATTERN — HugeIcons scout/photography set
+═══════════════════════════════════════════════════════════════ */
+
+const PERSONAL_ICONS = [
+  Camera01Icon,
+  TentIcon,
+  MountainIcon,
+  Compass01Icon,
+  MapPinIcon,
+  BinocularsIcon,
+];
+
+/* Checkerboard — icons assigned by (r*3 + ci) % 6 so rows and cols properly alternate */
+const PERSONAL_PLACEMENTS = (() => {
+  const COLS = 18;
+  const ROWS = 12;
+  const slotW = 100 / COLS;
+  const slotH = 100 / ROWS;
+  const out: { Icon: (typeof PERSONAL_ICONS)[0]; x: number; y: number }[] = [];
+  for (let r = 0; r < ROWS; r++) {
+    const y = (r + 0.5) * slotH;
+    const startCol = r % 2 === 0 ? 0 : 1;
+    for (let c = startCol; c < COLS; c += 2) {
+      out.push({ Icon: PERSONAL_ICONS[(Math.floor(r / 2) + c) % PERSONAL_ICONS.length], x: (c + 0.5) * slotW, y });
+    }
+  }
+  return out;
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   BENTO BLOCKS
+═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Profile — 4:5 ────────────────────────────────────────── */
+
+function ProfileBlock({ profileSrc }: { profileSrc: string }) {
+  return (
+    <div
+      className="relative overflow-hidden rounded-[28px]"
+      style={{ boxShadow: 'var(--sombra-elevada)', aspectRatio: '4/5', width: '100%' }}
+    >
+      <img
+        src={profileSrc}
+        alt="Milo Agudelo"
+        className="absolute inset-0 h-full w-full object-cover object-top"
+        loading="eager"
+        decoding="async"
+      />
+      <div
+        className="absolute inset-x-0 bottom-0 flex flex-col justify-end px-6 pb-6 pt-20"
+        style={{ background: 'linear-gradient(to top, rgba(5,10,25,0.82) 0%, rgba(5,10,25,0.4) 55%, transparent 100%)' }}
+      >
+        <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">
+          Design System · v1.0
+        </div>
+        <div className="text-[36px] font-black leading-none tracking-[-0.04em] text-white">
+          Milo<span style={{ color: '#5E80F8' }}>.</span>
+        </div>
+        <div className="mt-1.5 text-[13px] leading-snug text-white/65">
+          Productos digitales que hacen sentido.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── 2. Colors ───────────────────────────────────────────────── */
+
+const ACCENTS = [
+  { name: 'Voltio',  hex: '#0040FF', dark: true },
+  { name: 'Tinta',   hex: '#002BB0', dark: true },
+  { name: 'Niebla',  hex: '#DCE7F2', dark: false },
+  { name: 'Humo',    hex: '#EEF2F5', dark: false },
+];
+
+const NEUTRALS = [
+  { name: 'Fondo',         hex: '#F5F6F4' },
+  { name: 'Superficie',    hex: '#FBFBFA' },
+  { name: 'Borde',         hex: '#E5E7E0' },
+  { name: 'T. Primario',   hex: '#111827' },
+  { name: 'T. Secundario', hex: '#5F6B7A' },
+  { name: 'T. Terciario',  hex: '#94A3B8' },
+];
+
+function ColorsBlock() {
+  return (
+    <BentoCard>
+      <Label>Colores</Label>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {ACCENTS.map(c => (
+          <div key={c.name} className="overflow-hidden rounded-[18px] border border-border/60" style={{ boxShadow: 'var(--sombra-suave)' }}>
+            <div className="h-[72px]" style={{ background: c.hex, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2)' }} />
+            <div className="bg-white/80 px-3 py-2">
+              <div className="text-[12px] font-bold text-foreground">{c.name}</div>
+              <div className="font-mono text-[10px] text-muted-foreground">{c.hex}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+        {NEUTRALS.map(n => (
+          <div key={n.name} className="flex items-center gap-2">
+            <div className="size-7 shrink-0 rounded-[8px]" style={{ background: n.hex, border: '1px solid rgba(17,24,39,0.07)' }} />
+            <div>
+              <div className="text-[11px] font-semibold leading-none text-foreground">{n.name}</div>
+              <div className="mt-0.5 font-mono text-[9.5px] text-muted-foreground">{n.hex}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </BentoCard>
+  );
+}
+
+/* ── Typing code block ───────────────────────────────────────── */
+
+const CODE_TOKENS: { t: string; c: string }[] = [
+  { t: 'const ',           c: '#c792ea' },
+  { t: 'miloagudelo',      c: '#82aaff' },
+  { t: ' = {\n',           c: '#cdd6f4' },
+  { t: '  name',           c: '#89dceb' },
+  { t: ': ',               c: '#cdd6f4' },
+  { t: '"Camilo Agudelo"', c: '#a6e3a1' },
+  { t: ',\n',              c: '#cdd6f4' },
+  { t: '  role',           c: '#89dceb' },
+  { t: ': ',               c: '#cdd6f4' },
+  { t: '"Full Stack Dev"', c: '#a6e3a1' },
+  { t: ',\n',              c: '#cdd6f4' },
+  { t: '  stack',          c: '#89dceb' },
+  { t: ': [',              c: '#cdd6f4' },
+  { t: '"Astro"',          c: '#a6e3a1' },
+  { t: ', ',               c: '#cdd6f4' },
+  { t: '"React"',          c: '#a6e3a1' },
+  { t: '],\n',             c: '#cdd6f4' },
+  { t: '  available',      c: '#89dceb' },
+  { t: ': ',               c: '#cdd6f4' },
+  { t: 'true',             c: '#fab387' },
+  { t: ',\n',              c: '#cdd6f4' },
+  { t: '};',               c: '#cdd6f4' },
+];
+
+const CHARS = CODE_TOKENS.flatMap(tok => [...tok.t]);
+const FULL_TEXT = CHARS.join('');
+
+function TypingCode() {
+  const [count, setCount]     = useState(0);
+  const [erasing, setErasing] = useState(false);
+  const [paused, setPaused]   = useState(false);
+
+  useEffect(() => {
+    if (paused) {
+      const t = setTimeout(() => { setPaused(false); setErasing(true); }, 2200);
+      return () => clearTimeout(t);
+    }
+    if (erasing) {
+      if (count === 0) {
+        const t = setTimeout(() => setErasing(false), 600);
+        return () => clearTimeout(t);
+      }
+      const t = setTimeout(() => setCount(c => c - 1), 16);
+      return () => clearTimeout(t);
+    }
+    if (count < CHARS.length) {
+      const t = setTimeout(() => setCount(c => c + 1), 44);
+      return () => clearTimeout(t);
+    } else {
+      setPaused(true);
+    }
+  }, [count, erasing, paused]);
+
+  const text = CHARS.slice(0, count).join('');
+
+  return (
+    <div className="mt-4 flex-1 overflow-hidden rounded-[14px] border border-border/60 bg-white/60">
+      <div className="flex items-center gap-2 border-b border-border/40 px-4 py-2.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/40">Mono</span>
+        <span className="font-mono text-[11px] text-muted-foreground/70">JetBrains Mono</span>
+      </div>
+      {/* Wrapper establece la altura con el texto completo invisible */}
+      <div className="relative p-4">
+        <pre className="font-mono text-[11.5px] leading-[1.75] whitespace-pre-wrap invisible"
+          style={{ fontFamily: 'var(--font-mono)' }} aria-hidden>
+          {FULL_TEXT}
+        </pre>
+        <pre className="absolute inset-0 p-4 font-mono text-[11.5px] leading-[1.75] text-foreground whitespace-pre-wrap"
+          style={{ fontFamily: 'var(--font-mono)' }}>
+          {text}<span className="ds-cursor" />
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+/* ── 3. Typography ───────────────────────────────────────────── */
+
+function TypographyBlock() {
+  return (
+    <BentoCard className="flex h-full flex-col">
+      <Label>Tipografía</Label>
+      <div className="flex items-baseline gap-3 font-black leading-none tracking-[-0.05em]">
+        <span className="text-[60px] sm:text-[88px]">Aa</span>
+        <span className="text-[16px] font-semibold text-muted-foreground">Satoshi</span>
+      </div>
+      <div className="mt-4 flex flex-col divide-y divide-dashed divide-border">
+        {[
+          { role: 'Display', sample: 'Diseño y código',                              s: { fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1 } },
+          { role: 'H1',      sample: 'Proyectos que importan',                       s: { fontSize: 17, fontWeight: 700, letterSpacing: '-0.02em' } },
+          { role: 'Body',    sample: 'Construcción de experiencias simples y útiles.', s: { fontSize: 13, fontWeight: 400, color: '#5F6B7A', lineHeight: 1.6 } },
+          { role: 'Caption', sample: 'REACT · TYPESCRIPT · ASTRO',                  s: { fontSize: 10, fontFamily: 'var(--font-mono)', color: '#94A3B8', letterSpacing: '0.14em' } },
+        ].map(row => (
+          <div key={row.role} className="flex items-baseline gap-4 py-[10px] first:pt-0">
+            <span className="w-12 shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{row.role}</span>
+            <span style={row.s as React.CSSProperties}>{row.sample}</span>
+          </div>
+        ))}
+      </div>
+      <TypingCode />
+    </BentoCard>
+  );
+}
+
+/* ── 4. Buttons ──────────────────────────────────────────────── */
+
+function ButtonsBlock() {
+  return (
+    <BentoCard className="flex h-full flex-col">
+      <Label>Botones</Label>
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Primario</span>
+          <button className="btn-glass-primary flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
+            <svg className="size-[18px] shrink-0" viewBox="0 0 87.5 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path fill="#00832d" d="M49.5 36l8.53 9.75 11.47-8.86V18.86L52.99 18z"/>
+              <path fill="#0066da" d="M0 51.5V66c0 3.315 2.685 6 6 6h14.5l3-10.96-3-9.54H0z"/>
+              <path fill="#e94235" d="M20.5 0L0 20.5l10.96 3 9.54-3V0z"/>
+              <path fill="#2684fc" d="M20.5 20.5H0v31h20.5z"/>
+              <path fill="#00ac47" d="M82.6 8.68L69.5 18.86v34.03l13.16 10.2c1.97 1.54 4.84.135 4.84-2.37V11c0-2.535-2.9-3.93-4.9-2.32z"/>
+              <path fill="#ffba00" d="M49.5 36v15.5h-29V72h43c3.315 0 6-2.685 6-6V45.75z"/>
+              <path fill="#00832d" d="M62.5 0h-43v20.5h29V36l17-13.14V6c0-3.315-2.685-6-6-6z"/>
+            </svg>
+            Book a Call
+            <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-x-4 gap-y-3">
+          <div className="flex flex-col gap-2">
+            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Secundario</span>
+            <button className="btn-glass-secondary flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
+              Ver proyectos
+              <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+            </button>
+          </div>
+          <div className="flex flex-col gap-2">
+            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Icono + texto</span>
+            <button className="btn-glass-secondary flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
+              <HugeiconsIcon icon={Home01Icon} size={16} strokeWidth={1.5} />
+              Inicio
+              <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Ghost</span>
+          <button className="flex h-11 w-fit items-center gap-2 rounded-full px-2 font-sans text-sm font-bold text-foreground/50 cursor-pointer transition-colors hover:text-foreground">
+            <HugeiconsIcon icon={User02Icon} size={16} strokeWidth={1.5} />
+            Sobre mí
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Icono</span>
+          <div className="flex gap-2.5">
+            <button className="btn-glass-secondary flex size-11 items-center justify-center rounded-full cursor-pointer">
+              <HugeiconsIcon icon={Mail01Icon} size={16} strokeWidth={1.5} />
+            </button>
+            <button className="btn-glass-secondary flex size-11 items-center justify-center rounded-full cursor-pointer">
+              <HugeiconsIcon icon={Globe02Icon} size={16} strokeWidth={1.5} />
+            </button>
+            <button className="btn-glass-primary flex size-11 items-center justify-center rounded-full cursor-pointer">
+              <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={1.5} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </BentoCard>
+  );
+}
+
+/* ── 6. Iconography (wide) ───────────────────────────────────── */
+
+const ICON_SET = [
+  { Icon: Home01Icon,       name: 'Home' },
+  { Icon: User02Icon,       name: 'User' },
+  { Icon: Mail01Icon,       name: 'Mail' },
+  { Icon: Calendar01Icon,   name: 'Calendar' },
+  { Icon: Briefcase01Icon,  name: 'Briefcase' },
+  { Icon: CodeIcon,         name: 'Code' },
+  { Icon: Layers01Icon,     name: 'Layers' },
+  { Icon: PaintBrush01Icon, name: 'Paint' },
+  { Icon: FolderOpenIcon,   name: 'Folder' },
+  { Icon: Globe02Icon,      name: 'Globe' },
+  { Icon: Link01Icon,       name: 'Link' },
+  { Icon: Search01Icon,     name: 'Search' },
+  { Icon: StarIcon,         name: 'Star' },
+  { Icon: GridViewIcon,     name: 'Grid' },
+  { Icon: Chat01Icon,       name: 'Chat' },
+  { Icon: ArrowRight01Icon, name: 'Arrow' },
+];
+
+function IconographyBlock() {
+  return (
+    <BentoCard className="flex flex-col">
+      <div className="flex flex-col flex-1">
+        <div className="flex items-end justify-between mb-5">
+          <Label>Iconografía</Label>
+          <span className="mb-5 font-mono text-[10px] text-muted-foreground/40">HugeIcons · Stroke 1.5</span>
+        </div>
+
+        <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
+          {ICON_SET.map(({ Icon, name }) => (
+            <div key={name} className="flex flex-col items-center gap-2 rounded-[14px] border border-border/50 bg-white/50 py-3.5">
+              <HugeiconsIcon icon={Icon} size={20} strokeWidth={1.5} className="text-foreground" />
+              <span className="font-mono text-[8.5px] uppercase tracking-[0.08em] text-muted-foreground/50 text-center">{name}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Personal icon pattern */}
+        <div className="mt-5 flex flex-col flex-1 gap-1.5">
+          <div>
+            <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground/40">Patrón personal</span>
+          </div>
+          <div
+            className="relative w-full overflow-hidden rounded-[14px] border border-border/40 bg-white/20"
+            style={{ flex: '1 0 120px', minHeight: 120 }}
+            aria-hidden="true"
+          >
+            {PERSONAL_PLACEMENTS.map((item, i) => (
+              <div key={i} className="absolute text-foreground"
+                style={{ left: `${item.x}%`, top: `${item.y}%`, transform: 'translate(-50%, -50%)', opacity: 0.09 }}>
+                <HugeiconsIcon icon={item.Icon} size={16} strokeWidth={1.5} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </BentoCard>
+  );
+}
+
+/* ── 7. Images ───────────────────────────────────────────────── */
+
+function ImagesBlock() {
+  return (
+    <BentoCard className="flex h-full flex-col gap-5">
+      <Label>Imágenes</Label>
+      <div className="ds-frame flex items-center justify-center" style={{ aspectRatio: '16/10' }}>
+        <div
+          className="flex h-full w-full items-center justify-center font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground/50"
+          style={{ background: 'repeating-linear-gradient(135deg, rgba(17,24,39,0.03) 0 10px, transparent 10px 22px)' }}
+        >
+          Screenshot · 16:9
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-2.5">
+        {['UI 01', 'UI 02', 'UI 03'].map(l => (
+          <div key={l} className="ds-frame" style={{ aspectRatio: '4/3' }}>
+            <div
+              className="flex h-full items-center justify-center font-mono text-[9px] text-muted-foreground/40"
+              style={{ background: 'repeating-linear-gradient(135deg, rgba(17,24,39,0.03) 0 10px, transparent 10px 22px)' }}
+            >
+              {l}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-col gap-2 mt-auto">
+        {[
+          { label: 'Radius', value: '24px' },
+          { label: 'Borde',  value: '2px · blanco' },
+          { label: 'Sombra', value: '0 20px 50px / 6%' },
+        ].map(item => (
+          <div key={item.label} className="flex items-center justify-between rounded-[10px] border border-border/50 bg-white/40 px-3 py-2">
+            <span className="text-[12px] font-medium text-foreground">{item.label}</span>
+            <span className="font-mono text-[10px] text-muted-foreground">{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </BentoCard>
+  );
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+
+function Header() {
+  return (
+    <motion.header
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:mb-8"
+    >
+      <div>
+        <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground/50 sm:text-[11px]">
+          miloagudelo.com
+        </div>
+        <h1 className="text-[22px] font-black tracking-[-0.03em] text-foreground sm:text-[28px]">
+          Design System<span className="text-primary">.</span>
+        </h1>
+      </div>
+      <div className="glass-pill flex items-center gap-2 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
+        <span className="size-[6px] rounded-full bg-primary" style={{ boxShadow: '0 0 0 3px rgba(0,64,255,0.12)' }} />
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground sm:text-[11px]">
+          v1.0 · 2026
+        </span>
+      </div>
+    </motion.header>
+  );
+}
+
+/* ── Main export ─────────────────────────────────────────────── */
+
+export function DesignSystemPage({ profileSrc = '' }: { profileSrc?: string }) {
+  return (
+    <div className="ds-bg ds-noise relative min-h-screen overflow-x-hidden antialiased" style={{ letterSpacing: '-0.005em' }}>
+      <Bubbles />
+
+      <div className="relative z-[2] mx-auto max-w-[1200px] px-4 py-10 pb-24 sm:px-6 sm:py-12 sm:pb-28 lg:px-8">
+        <Header />
+
+        {/*
+          Bento grid — responsive:
+          mobile  → 1 col stacked
+          sm 640  → 2 cols
+          lg 1024 → 3 cols (Profile | Buttons | Typography↕, Colors↔ | Typography↕, Icono↔ | Images)
+        */}
+        <div className="ds-grid">
+
+          {/* Profile — 4:5 */}
+          <motion.div {...fadeUp(0)} className="ds-area-profile">
+            <ProfileBlock profileSrc={profileSrc} />
+          </motion.div>
+
+          {/* Buttons */}
+          <motion.div {...fadeUp(1)} className="ds-area-buttons h-full">
+            <ButtonsBlock />
+          </motion.div>
+
+          {/* Typography — tall anchor (spans 2 rows on lg) */}
+          <motion.div {...fadeUp(2)} className="ds-area-typography h-full">
+            <TypographyBlock />
+          </motion.div>
+
+          {/* Colors — wide */}
+          <motion.div {...fadeUp(3)} className="ds-area-colors h-full">
+            <ColorsBlock />
+          </motion.div>
+
+          {/* Iconography — wide */}
+          <motion.div {...fadeUp(4)} className="ds-area-iconography h-full">
+            <IconographyBlock />
+          </motion.div>
+
+          {/* Images */}
+          <motion.div {...fadeUp(5)} className="ds-area-images h-full">
+            <ImagesBlock />
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}
