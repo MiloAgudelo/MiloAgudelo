@@ -1,5 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
+import { Font } from 'astro:assets';
 import '@/styles/global.css';
 
 interface Props {
@@ -29,6 +30,9 @@ const basePath = lang === 'es'
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" />
 
     <!-- hreflang para SEO multilenguaje -->
     <link rel="alternate" hreflang="es" href={new URL(getRelativeLocaleUrl('es', basePath), Astro.site)} />
