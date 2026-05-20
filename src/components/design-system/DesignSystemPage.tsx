@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { motion } from 'motion/react';
 import { Bubbles } from './Bubbles';
 import '@/styles/design-system.css';
@@ -28,6 +28,59 @@ import {
   Compass01Icon,
   MapPinIcon,
 } from '@hugeicons/core-free-icons';
+
+/* ── i18n ────────────────────────────────────────────────────── */
+
+const STRINGS = {
+  es: {
+    tagline: 'Productos digitales que hacen sentido.',
+    colors: 'Colores',
+    typography: 'Tipografía',
+    display_sample: 'Diseño y código',
+    h1_sample: 'Proyectos que importan',
+    body_sample: 'Construcción de experiencias simples y útiles.',
+    buttons: 'Botones',
+    primary: 'Primario',
+    secondary: 'Secundario',
+    icon_text: 'Icono + texto',
+    ghost: 'Ghost',
+    icon: 'Icono',
+    view_projects: 'Ver proyectos',
+    home: 'Inicio',
+    about: 'Sobre mí',
+    iconography: 'Iconografía',
+    personal_pattern: 'Patrón personal',
+    images: 'Imágenes',
+    border: 'Borde',
+    shadow: 'Sombra',
+  },
+  en: {
+    tagline: 'Digital products that make sense.',
+    colors: 'Colors',
+    typography: 'Typography',
+    display_sample: 'Design and code',
+    h1_sample: 'Projects that matter',
+    body_sample: 'Building simple and useful experiences.',
+    buttons: 'Buttons',
+    primary: 'Primary',
+    secondary: 'Secondary',
+    icon_text: 'Icon + text',
+    ghost: 'Ghost',
+    icon: 'Icon',
+    view_projects: 'View projects',
+    home: 'Home',
+    about: 'About me',
+    iconography: 'Iconography',
+    personal_pattern: 'Personal pattern',
+    images: 'Images',
+    border: 'Border',
+    shadow: 'Shadow',
+  },
+} as const;
+
+type Strings = typeof STRINGS.es;
+const LocaleCtx = createContext<Strings>(STRINGS.es);
+const useS = () => useContext(LocaleCtx);
 
 /* ── Animation ───────────────────────────────────────────────── */
 
@@ -106,6 +159,7 @@ const PERSONAL_PLACEMENTS = (() => {
 /* ── 1. Profile — 4:5 ────────────────────────────────────────── */
 
 function ProfileBlock({ profileSrc }: { profileSrc: string }) {
+  const s = useS();
   return (
     <div
       className="relative overflow-hidden rounded-[28px]"
@@ -129,7 +183,7 @@ function ProfileBlock({ profileSrc }: { profileSrc: string }) {
           Milo<span style={{ color: '#5E80F8' }}>.</span>
         </div>
         <div className="mt-1.5 text-[13px] leading-snug text-white/65">
-          Productos digitales que hacen sentido.
+          {s.tagline}
         </div>
       </div>
     </div>
@@ -155,9 +209,10 @@ const NEUTRALS = [
 ];
 
 function ColorsBlock() {
+  const s = useS();
   return (
     <BentoCard>
-      <Label>Colores</Label>
+      <Label>{s.colors}</Label>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {ACCENTS.map(c => (
           <div key={c.name} className="overflow-hidden rounded-[18px] border border-border/60" style={{ boxShadow: 'var(--sombra-suave)' }}>
@@ -266,23 +321,24 @@ function TypingCode() {
 /* ── 3. Typography ───────────────────────────────────────────── */
 
 function TypographyBlock() {
+  const s = useS();
   return (
     <BentoCard className="flex h-full flex-col">
-      <Label>Tipografía</Label>
+      <Label>{s.typography}</Label>
       <div className="flex items-baseline gap-3 font-black leading-none tracking-[-0.05em]">
         <span className="text-[60px] sm:text-[88px]">Aa</span>
         <span className="text-[16px] font-semibold text-muted-foreground">Satoshi</span>
       </div>
       <div className="mt-4 flex flex-col divide-y divide-dashed divide-border">
         {[
-          { role: 'Display', sample: 'Diseño y código',                              s: { fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1 } },
-          { role: 'H1',      sample: 'Proyectos que importan',                       s: { fontSize: 17, fontWeight: 700, letterSpacing: '-0.02em' } },
-          { role: 'Body',    sample: 'Construcción de experiencias simples y útiles.', s: { fontSize: 13, fontWeight: 400, color: '#5F6B7A', lineHeight: 1.6 } },
-          { role: 'Caption', sample: 'REACT · TYPESCRIPT · ASTRO',                  s: { fontSize: 10, fontFamily: 'var(--font-mono)', color: '#94A3B8', letterSpacing: '0.14em' } },
+          { role: 'Display', sample: s.display_sample,  style: { fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1 } },
+          { role: 'H1',      sample: s.h1_sample,       style: { fontSize: 17, fontWeight: 700, letterSpacing: '-0.02em' } },
+          { role: 'Body',    sample: s.body_sample,     style: { fontSize: 13, fontWeight: 400, color: '#5F6B7A', lineHeight: 1.6 } },
+          { role: 'Caption', sample: 'REACT · TYPESCRIPT · ASTRO', style: { fontSize: 10, fontFamily: 'var(--font-mono)', color: '#94A3B8', letterSpacing: '0.14em' } },
         ].map(row => (
           <div key={row.role} className="flex items-baseline gap-4 py-[10px] first:pt-0">
             <span className="w-12 shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{row.role}</span>
-            <span style={row.s as React.CSSProperties}>{row.sample}</span>
+            <span style={row.style as React.CSSProperties}>{row.sample}</span>
           </div>
         ))}
       </div>
@@ -294,12 +350,13 @@ function TypographyBlock() {
 /* ── 4. Buttons ──────────────────────────────────────────────── */
 
 function ButtonsBlock() {
+  const s = useS();
   return (
     <BentoCard className="flex h-full flex-col">
-      <Label>Botones</Label>
+      <Label>{s.buttons}</Label>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Primario</span>
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.primary}</span>
           <button className="btn-glass-primary flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
             <svg className="size-[18px] shrink-0" viewBox="0 0 87.5 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path fill="#00832d" d="M49.5 36l8.53 9.75 11.47-8.86V18.86L52.99 18z"/>
@@ -317,32 +374,32 @@ function ButtonsBlock() {
 
         <div className="flex flex-wrap gap-x-4 gap-y-3">
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Secundario</span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.secondary}</span>
             <button className="btn-glass-secondary flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
-              Ver proyectos
+              {s.view_projects}
               <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
             </button>
           </div>
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Icono + texto</span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.icon_text}</span>
             <button className="btn-glass-secondary flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
               <HugeiconsIcon icon={Home01Icon} size={16} strokeWidth={1.5} />
-              Inicio
+              {s.home}
               <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
             </button>
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Ghost</span>
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.ghost}</span>
           <button className="flex h-11 w-fit items-center gap-2 rounded-full px-2 font-sans text-sm font-bold text-foreground/50 cursor-pointer transition-colors hover:text-foreground">
             <HugeiconsIcon icon={User02Icon} size={16} strokeWidth={1.5} />
-            Sobre mí
+            {s.about}
           </button>
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Icono</span>
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.icon}</span>
           <div className="flex gap-2.5">
             <button className="btn-glass-secondary flex size-11 items-center justify-center rounded-full cursor-pointer">
               <HugeiconsIcon icon={Mail01Icon} size={16} strokeWidth={1.5} />
@@ -382,11 +439,12 @@ const ICON_SET = [
 ];
 
 function IconographyBlock() {
+  const s = useS();
   return (
     <BentoCard className="flex flex-col">
       <div className="flex flex-col flex-1">
         <div className="flex items-end justify-between mb-5">
-          <Label>Iconografía</Label>
+          <Label>{s.iconography}</Label>
           <span className="mb-5 font-mono text-[10px] text-muted-foreground/40">HugeIcons · Stroke 1.5</span>
         </div>
 
@@ -402,7 +460,7 @@ function IconographyBlock() {
         {/* Personal icon pattern */}
         <div className="mt-5 flex flex-col flex-1 gap-1.5">
           <div>
-            <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground/40">Patrón personal</span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground/40">{s.personal_pattern}</span>
           </div>
           <div
             className="relative w-full overflow-hidden rounded-[14px] border border-border/40 bg-white/20"
@@ -425,9 +483,10 @@ function IconographyBlock() {
 /* ── 7. Images ───────────────────────────────────────────────── */
 
 function ImagesBlock() {
+  const s = useS();
   return (
     <BentoCard className="flex h-full flex-col gap-5">
-      <Label>Imágenes</Label>
+      <Label>{s.images}</Label>
       <div className="ds-frame flex items-center justify-center" style={{ aspectRatio: '16/10' }}>
         <div
           className="flex h-full w-full items-center justify-center font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground/50"
@@ -450,9 +509,9 @@ function ImagesBlock() {
       </div>
       <div className="flex flex-col gap-2 mt-auto">
         {[
-          { label: 'Radius', value: '24px' },
-          { label: 'Borde',  value: '2px · blanco' },
-          { label: 'Sombra', value: '0 20px 50px / 6%' },
+          { label: 'Radius',   value: '24px' },
+          { label: s.border,   value: '2px · white' },
+          { label: s.shadow,   value: '0 20px 50px / 6%' },
         ].map(item => (
           <div key={item.label} className="flex items-center justify-between rounded-[10px] border border-border/50 bg-white/40 px-3 py-2">
             <span className="text-[12px] font-medium text-foreground">{item.label}</span>
@@ -494,8 +553,9 @@ function Header() {
 
 /* ── Main export ─────────────────────────────────────────────── */
 
-export function DesignSystemPage({ profileSrc = '' }: { profileSrc?: string }) {
+export function DesignSystemPage({ profileSrc = '', locale = 'es' }: { profileSrc?: string; locale?: 'es' | 'en' }) {
   return (
+    <LocaleCtx.Provider value={STRINGS[locale]}>
     <div className="ds-bg ds-noise relative min-h-screen overflow-x-hidden antialiased" style={{ letterSpacing: '-0.005em' }}>
       <Bubbles />
 
@@ -542,5 +602,6 @@ export function DesignSystemPage({ profileSrc = '' }: { profileSrc?: string }) {
         </div>
       </div>
     </div>
+    </LocaleCtx.Provider>
   );
 }

@@ -28,7 +28,6 @@ export function Bubbles() {
   const circleRefs: Refs<SVGCircleElement>  = useRef([]);
   const causticRefs: Refs<SVGCircleElement> = useRef([]);
   const glossRefs: Refs<SVGEllipseElement>  = useRef([]);
-  const hitRefs: Refs<SVGCircleElement>     = useRef([]);
 
   /* ── Animation state ────────────────────────────────── */
   const drifts      = useRef(DEFS.map(() => ({ x: 0, y: 0 })));
@@ -52,6 +51,15 @@ export function Bubbles() {
         ny: (e.clientY / window.innerHeight - 0.5) * 2,
       };
       pointerRaw.current = { x: e.clientX, y: e.clientY };
+      if (!drag.current.active) {
+        let over = false;
+        for (let i = 0; i < DEFS.length; i++) {
+          const { cx, cy } = computed.current[i];
+          const dx = e.clientX - cx, dy = e.clientY - cy;
+          if (dx * dx + dy * dy <= DEFS[i].r * DEFS[i].r) { over = true; break; }
+        }
+        document.body.style.cursor = over ? 'grab' : '';
+      }
     };
     const onUp = () => stopDrag();
     window.addEventListener('mousemove', onMove, { passive: true });
@@ -107,13 +115,45 @@ export function Bubbles() {
     document.body.style.userSelect = '';
   }, []);
 
+  /* ── Drag start — global hit-test, no captured pointer events ── */
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      for (let i = 0; i < DEFS.length; i++) {
+        const { cx, cy } = computed.current[i];
+        const dx = e.clientX - cx, dy = e.clientY - cy;
+        if (dx * dx + dy * dy <= DEFS[i].r * DEFS[i].r) {
+          startDrag(e.clientX, e.clientY, i);
+          return;
+        }
+      }
+    };
+    window.addEventListener('mousedown', onDown);
+    return () => window.removeEventListener('mousedown', onDown);
+  }, [startDrag]);
+
+  useEffect(() => {
+    const onStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t) return;
+      for (let i = 0; i < DEFS.length; i++) {
+        const { cx, cy } = computed.current[i];
+        const dx = t.clientX - cx, dy = t.clientY - cy;
+        if (dx * dx + dy * dy <= DEFS[i].r * DEFS[i].r) {
+          startDrag(t.clientX, t.clientY, i);
+          return;
+        }
+      }
+    };
+    window.addEventListener('touchstart', onStart, { passive: true });
+    return () => window.removeEventListener('touchstart', onStart);
+  }, [startDrag]);
+
   /* ── Animation frame ────────────────────────────────── */
   useAnimationFrame((time) => {
     DEFS.forEach((d, i) => {
       const circle  = circleRefs.current[i];
       const caustic = causticRefs.current[i];
       const gloss   = glossRefs.current[i];
-      const hit     = hitRefs.current[i];
       if (!circle) return;
 
       const bx = d.bx(window.innerWidth);
@@ -150,7 +190,6 @@ export function Bubbles() {
       circle.setAttribute('cy', String(cy));
       if (caustic) { caustic.setAttribute('cx', String(cx)); caustic.setAttribute('cy', String(cy)); }
       if (gloss)   { gloss.setAttribute('cx', String(cx - d.r * 0.16)); gloss.setAttribute('cy', String(cy - d.r * 0.22)); }
-      if (hit)     { hit.setAttribute('cx', String(cx)); hit.setAttribute('cy', String(cy)); }
     });
   });
 
@@ -218,25 +257,6 @@ export function Bubbles() {
         ))}
       </svg>
 
-      {/* ── Hit SVG — z-index 99, transparent drag handles ── */}
-      <svg
-        style={{ position: 'fixed', inset: 0, width: '100vw', height: '100vh', zIndex: 99, pointerEvents: 'none', overflow: 'visible' }}
-        aria-hidden="true"
-      >
-        {DEFS.map((d, i) => (
-          <circle
-            key={i}
-            ref={el => { hitRefs.current[i] = el; }}
-            cx={d.bx(vp.w)}
-            cy={d.by(vp.h)}
-            r={d.r}
-            fill="transparent"
-            style={{ pointerEvents: 'all', cursor: 'grab' }}
-            onMouseDown={e => { e.preventDefault(); startDrag(e.clientX, e.clientY, i); }}
-            onTouchStart={e => { const t = e.touches[0]; if (t) startDrag(t.clientX, t.clientY, i); }}
-          />
-        ))}
-      </svg>
     </>
   );
 }
