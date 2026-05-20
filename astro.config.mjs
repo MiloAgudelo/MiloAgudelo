@@ -9,6 +9,10 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://miloagudelo.com',
+  redirects: {
+    '/': '/coming-soon',
+    '/en': '/en/coming-soon',
+  },
 
   fonts: [
     {
