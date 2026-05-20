@@ -1,10 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
----
+export const prerender = true;
 
-<BaseLayout
-  title="Milo Agudelo - Desarrollador Full Stack"
-  description="Portafolio de Milo Agudelo, desarrollador Full Stack especializado en rendimiento e impacto social."
->
-  <main></main>
-</BaseLayout>
+return Astro.redirect('/coming-soon', 301);
+---
