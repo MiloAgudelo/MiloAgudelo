@@ -1,5 +1,12 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import { motion } from 'motion/react';
+import { motion, useMotionValue, useTransform, animate, useReducedMotion } from 'motion/react';
+import {
+  makeBlockAnim,
+  makeItemAnim,
+  makeScaleAnim,
+  makeBarAnim,
+  makeRowAnim,
+} from '@/lib/motion-variants';
 import { Bubbles } from './Bubbles';
 import '@/styles/design-system.css';
 
@@ -219,21 +226,45 @@ const SPACING_DEFS = [
 
 function ProfileBlock({ profileSrc }: { profileSrc: string }) {
   const s = useS();
+  const reduced = useReducedMotion() ?? false;
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const imgX = useTransform(mx, [-0.5, 0.5], ['-8px', '8px']);
+  const imgY = useTransform(my, [-0.5, 0.5], ['-8px', '8px']);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (reduced) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    mx.set((e.clientX - rect.left) / rect.width - 0.5);
+    my.set((e.clientY - rect.top)  / rect.height - 0.5);
+  };
+  const handleMouseLeave = () => {
+    animate(mx, 0, { type: 'spring', stiffness: 180, damping: 22 });
+    animate(my, 0, { type: 'spring', stiffness: 180, damping: 22 });
+  };
+
   return (
     <div
       className="relative overflow-hidden rounded-[28px]"
       style={{ boxShadow: 'var(--sombra-elevada)', aspectRatio: '4/5', width: '100%' }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
-      <img
+      <motion.img
         src={profileSrc}
         alt="Milo Agudelo"
         className="absolute inset-0 h-full w-full object-cover object-top"
+        style={{ x: imgX, y: imgY, scale: 1.1 }}
         loading="eager"
         decoding="async"
       />
-      <div
+      <motion.div
         className="absolute inset-x-0 bottom-0 flex flex-col justify-end px-6 pb-6 pt-20"
         style={{ background: 'linear-gradient(to top, rgba(5,10,25,0.82) 0%, rgba(5,10,25,0.4) 55%, transparent 100%)' }}
+        initial={{ y: reduced ? 0 : 28, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: reduced ? 0 : 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">
           Design System · v1.0
@@ -244,7 +275,7 @@ function ProfileBlock({ profileSrc }: { profileSrc: string }) {
         <div className="mt-1.5 text-[13px] leading-snug text-white/65">
           {s.tagline}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -269,31 +300,53 @@ const NEUTRALS = [
 
 function ColorsBlock() {
   const s = useS();
+  const reduced = useReducedMotion() ?? false;
+  const scaleV = makeScaleAnim(reduced);
+  const itemV  = makeItemAnim(reduced);
   return (
     <BentoCard>
       <Label>{s.colors}</Label>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <motion.div
+        className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+        variants={makeBlockAnim(0.15, 0.05)}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
         {ACCENTS.map(c => (
-          <div key={c.name} className="overflow-hidden rounded-[18px] border border-border/60" style={{ boxShadow: 'var(--sombra-suave)' }}>
+          <motion.div
+            key={c.name}
+            variants={scaleV}
+            className="overflow-hidden rounded-[18px] border border-border/60 cursor-default"
+            style={{ boxShadow: 'var(--sombra-suave)' }}
+            whileHover={reduced ? {} : { y: -5, scale: 1.04 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          >
             <div className="h-[72px]" style={{ background: c.hex, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2)' }} />
             <div className="bg-white/80 px-3 py-2">
               <div className="text-[12px] font-bold text-foreground">{c.name}</div>
               <div className="font-mono text-[10px] text-muted-foreground">{c.hex}</div>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+      </motion.div>
+      <motion.div
+        className="mt-4 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap"
+        variants={makeBlockAnim(0.28, 0.04)}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
         {NEUTRALS.map(n => (
-          <div key={n.name} className="flex items-center gap-2">
+          <motion.div key={n.name} variants={itemV} className="flex items-center gap-2">
             <div className="size-7 shrink-0 rounded-[8px]" style={{ background: n.hex, border: '1px solid rgba(17,24,39,0.07)' }} />
             <div>
               <div className="text-[11px] font-semibold leading-none text-foreground">{n.name}</div>
               <div className="mt-0.5 font-mono text-[9.5px] text-muted-foreground">{n.hex}</div>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </BentoCard>
   );
 }
@@ -383,29 +436,41 @@ function TypingCode() {
 
 function TypographyBlock() {
   const s = useS();
+  const reduced = useReducedMotion() ?? false;
+  const rowV = makeRowAnim(reduced);
   return (
     <BentoCard className="flex h-full flex-col">
       <Label>{s.typography}</Label>
       <div className="flex items-baseline gap-3 font-black leading-none tracking-[-0.05em]">
-        <span className="text-[60px] sm:text-[88px]">Aa</span>
+        <motion.span
+          className="inline-block text-[60px] sm:text-[88px] cursor-default select-none"
+          whileHover={reduced ? {} : { y: -3, rotate: -1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 14 }}
+        >Aa</motion.span>
         <span className="text-[16px] font-semibold text-muted-foreground">Satoshi</span>
       </div>
-      <div className="mt-4 flex flex-col divide-y divide-dashed divide-border">
+      <motion.div
+        className="mt-4 flex flex-col divide-y divide-dashed divide-border"
+        variants={makeBlockAnim(0.15, 0.08)}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
         {[
           { role: 'Display', usage: s.type_display_use, sample: s.display_sample,  style: { fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1 } },
           { role: 'H1',      usage: s.type_h1_use,      sample: s.h1_sample,       style: { fontSize: 17, fontWeight: 700, letterSpacing: '-0.02em' } },
           { role: 'Body',    usage: s.type_body_use,     sample: s.body_sample,     style: { fontSize: 13, fontWeight: 400, color: '#5F6B7A', lineHeight: 1.6 } },
           { role: 'Caption', usage: s.type_caption_use,  sample: 'REACT · TYPESCRIPT · ASTRO', style: { fontSize: 10, fontFamily: 'var(--font-mono)', color: '#94A3B8', letterSpacing: '0.14em' } },
         ].map(row => (
-          <div key={row.role} className="flex items-baseline gap-4 py-[10px] first:pt-0">
+          <motion.div key={row.role} variants={rowV} className="flex items-baseline gap-4 py-[10px] first:pt-0">
             <div className="w-12 shrink-0">
               <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{row.role}</div>
               <div className="mt-0.5 font-mono text-[8px] leading-none text-muted-foreground/25">{row.usage}</div>
             </div>
             <span style={row.style as React.CSSProperties}>{row.sample}</span>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
       <TypingCode />
     </BentoCard>
   );
@@ -415,13 +480,21 @@ function TypographyBlock() {
 
 function ButtonsBlock() {
   const s = useS();
+  const reduced = useReducedMotion() ?? false;
+  const itemV = makeItemAnim(reduced);
   return (
     <BentoCard className="flex h-full flex-col">
       <Label>{s.buttons}</Label>
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
+      <motion.div
+        className="flex flex-col gap-6"
+        variants={makeBlockAnim(0.15, 0.09)}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
+        <motion.div variants={itemV} className="flex flex-col gap-2">
           <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.primary}</span>
-          <button className="btn-glass-primary flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
+          <button className="btn-glass-primary group/btn flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
             <svg className="size-[18px] shrink-0" viewBox="0 0 87.5 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path fill="#00832d" d="M49.5 36l8.53 9.75 11.47-8.86V18.86L52.99 18z"/>
               <path fill="#0066da" d="M0 51.5V66c0 3.315 2.685 6 6 6h14.5l3-10.96-3-9.54H0z"/>
@@ -432,37 +505,43 @@ function ButtonsBlock() {
               <path fill="#00832d" d="M62.5 0h-43v20.5h29V36l17-13.14V6c0-3.315-2.685-6-6-6z"/>
             </svg>
             Book a Call
-            <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+            <span className="transition-transform duration-200 group-hover/btn:translate-x-1">
+              <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+            </span>
           </button>
-        </div>
+        </motion.div>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-3">
+        <motion.div variants={itemV} className="flex flex-wrap gap-x-4 gap-y-3">
           <div className="flex flex-col gap-2">
             <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.secondary}</span>
-            <button className="btn-glass-secondary flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
+            <button className="btn-glass-secondary group/btn flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
               {s.view_projects}
-              <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+              <span className="transition-transform duration-200 group-hover/btn:translate-x-1">
+                <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+              </span>
             </button>
           </div>
           <div className="flex flex-col gap-2">
             <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.icon_text}</span>
-            <button className="btn-glass-secondary flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
+            <button className="btn-glass-secondary group/btn flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
               <HugeiconsIcon icon={Home01Icon} size={16} strokeWidth={1.5} />
               {s.home}
-              <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+              <span className="transition-transform duration-200 group-hover/btn:translate-x-1">
+                <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+              </span>
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="flex flex-col gap-2">
+        <motion.div variants={itemV} className="flex flex-col gap-2">
           <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.ghost}</span>
           <button className="flex h-11 w-fit items-center gap-2 rounded-full px-2 font-sans text-sm font-bold text-foreground/50 cursor-pointer transition-colors hover:text-foreground">
             <HugeiconsIcon icon={User02Icon} size={16} strokeWidth={1.5} />
             {s.about}
           </button>
-        </div>
+        </motion.div>
 
-        <div className="flex flex-col gap-2">
+        <motion.div variants={itemV} className="flex flex-col gap-2">
           <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.icon}</span>
           <div className="flex gap-2.5">
             <button className="btn-glass-secondary flex size-11 items-center justify-center rounded-full cursor-pointer">
@@ -475,8 +554,8 @@ function ButtonsBlock() {
               <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={1.5} />
             </button>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </BentoCard>
   );
 }
@@ -504,6 +583,9 @@ const ICON_SET = [
 
 function IconographyBlock() {
   const s = useS();
+  const reduced = useReducedMotion() ?? false;
+  const scaleV = makeScaleAnim(reduced);
+  const itemV  = makeItemAnim(reduced);
   return (
     <BentoCard className="flex flex-col">
       <div className="flex flex-col flex-1">
@@ -512,23 +594,39 @@ function IconographyBlock() {
           <span className="mb-5 font-mono text-[10px] text-muted-foreground/40">HugeIcons · Stroke 1.5</span>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
+        <motion.div
+          className="grid grid-cols-4 gap-3 sm:grid-cols-8"
+          variants={makeBlockAnim(0.15, 0.035)}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+        >
           {ICON_SET.map(({ Icon, name }) => (
-            <div key={name} className="flex flex-col items-center gap-2 rounded-[14px] border border-border/50 bg-white/50 py-3.5">
+            <motion.div
+              key={name}
+              variants={scaleV}
+              className="flex flex-col items-center gap-2 rounded-[14px] border border-border/50 bg-white/50 py-3.5 cursor-default"
+              whileHover={reduced ? {} : { scale: 1.12, rotate: 5 }}
+              transition={{ type: 'spring', stiffness: 280, damping: 16 }}
+            >
               <HugeiconsIcon icon={Icon} size={20} strokeWidth={1.5} className="text-foreground" />
               <span className="font-mono text-[8.5px] uppercase tracking-[0.08em] text-muted-foreground/50 text-center">{name}</span>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Personal icon pattern */}
         <div className="mt-5 flex flex-col flex-1 gap-1.5">
           <div>
             <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground/40">{s.personal_pattern}</span>
           </div>
-          <div
+          <motion.div
             className="relative w-full overflow-hidden rounded-[14px] border border-border/40 bg-white/20"
             style={{ flex: '1 0 120px', minHeight: 120 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: reduced ? 0 : 0.8, delay: 0.65 }}
             aria-hidden="true"
           >
             {PERSONAL_PLACEMENTS.map((item, i) => (
@@ -537,7 +635,7 @@ function IconographyBlock() {
                 <HugeiconsIcon icon={item.Icon} size={16} strokeWidth={1.5} />
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </BentoCard>
@@ -548,49 +646,72 @@ function IconographyBlock() {
 
 function ImagesBlock() {
   const s = useS();
+  const reduced = useReducedMotion() ?? false;
+  const scaleV = makeScaleAnim(reduced);
+  const itemV  = makeItemAnim(reduced);
   return (
     <BentoCard className="flex h-full flex-col gap-5">
       <Label>{s.images}</Label>
-      <div className="ds-frame flex items-center justify-center" style={{ aspectRatio: '16/10' }}>
+      <motion.div
+        className="ds-frame flex items-center justify-center"
+        style={{ aspectRatio: '16/10' }}
+        variants={scaleV}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
         <div
           className="flex h-full w-full items-center justify-center font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground/50"
           style={{ background: 'repeating-linear-gradient(135deg, rgba(17,24,39,0.03) 0 10px, transparent 10px 22px)' }}
         >
           Screenshot · 16:9
         </div>
-      </div>
-      <div className="grid grid-cols-3 gap-2.5">
+      </motion.div>
+      <motion.div
+        className="grid grid-cols-3 gap-2.5"
+        variants={makeBlockAnim(0.2, 0.07)}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
         {['UI 01', 'UI 02', 'UI 03'].map(l => (
-          <div key={l} className="ds-frame" style={{ aspectRatio: '4/3' }}>
+          <motion.div key={l} variants={scaleV} className="ds-frame" style={{ aspectRatio: '4/3' }}>
             <div
               className="flex h-full items-center justify-center font-mono text-[9px] text-muted-foreground/40"
               style={{ background: 'repeating-linear-gradient(135deg, rgba(17,24,39,0.03) 0 10px, transparent 10px 22px)' }}
             >
               {l}
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
-      <div className="flex flex-col gap-2 mt-auto">
+      </motion.div>
+      <motion.div
+        className="flex flex-col gap-2 mt-auto"
+        variants={makeBlockAnim(0.38, 0.07)}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
         {[
           { label: 'Radius',   value: '24px' },
           { label: s.border,   value: '2px · white' },
           { label: s.shadow,   value: '0 20px 50px / 6%' },
         ].map(item => (
-          <div key={item.label} className="flex items-center justify-between rounded-[10px] border border-border/50 bg-white/40 px-3 py-2">
+          <motion.div key={item.label} variants={itemV} className="flex items-center justify-between rounded-[10px] border border-border/50 bg-white/40 px-3 py-2">
             <span className="text-[12px] font-medium text-foreground">{item.label}</span>
             <span className="font-mono text-[10px] text-muted-foreground">{item.value}</span>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </BentoCard>
   );
 }
 
 /* ── 8. Motion ───────────────────────────────────────────────── */
 
-function EasingRow({ name, css, svgPath, applies }: { name: string; css: string; svgPath: string; applies: string }) {
+function EasingRow({ name, css, svgPath, applies, index }: { name: string; css: string; svgPath: string; applies: string; index: number }) {
   const [hovered, setHovered] = useState(false);
+  const reduced = useReducedMotion() ?? false;
 
   return (
     <div className="flex items-center gap-3 py-1.5">
@@ -606,8 +727,18 @@ function EasingRow({ name, css, svgPath, applies }: { name: string; css: string;
         <line x1={0} y1={72} x2={72} y2={72} stroke="rgba(17,24,39,0.08)" strokeWidth={1.5} />
         {/* top dashed line */}
         <line x1={0} y1={0} x2={72} y2={0} stroke="rgba(17,24,39,0.08)" strokeWidth={1.5} strokeDasharray="4 3" />
-        {/* easing curve */}
-        <path d={svgPath} fill="none" stroke="#0040FF" strokeWidth={2.2} strokeLinecap="round" />
+        {/* easing curve — draws itself on enter */}
+        <motion.path
+          d={svgPath}
+          fill="none"
+          stroke="#0040FF"
+          strokeWidth={2.2}
+          strokeLinecap="round"
+          initial={{ pathLength: reduced ? 1 : 0 }}
+          whileInView={{ pathLength: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: reduced ? 0 : 0.65, ease: 'easeOut', delay: 0.15 + index * 0.15 }}
+        />
       </svg>
 
       {/* Name + CSS formula + applies */}
@@ -627,7 +758,9 @@ function EasingRow({ name, css, svgPath, applies }: { name: string; css: string;
           className="absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-primary"
           style={{
             left: hovered ? 'calc(100% - 14px)' : '2px',
-            transition: hovered ? `left 600ms ${css}` : 'left 0ms',
+            transition: hovered
+              ? `left 600ms ${css}`
+              : 'left 400ms cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         />
       </div>
@@ -635,17 +768,27 @@ function EasingRow({ name, css, svgPath, applies }: { name: string; css: string;
   );
 }
 
-function DurationBar({ name, ms, use }: { name: string; ms: number; use: string }) {
+function DurationBar({ name, ms, use, index }: { name: string; ms: number; use: string; index: number }) {
+  const reduced = useReducedMotion() ?? false;
   return (
     <div className="flex items-center gap-3">
       <div className="w-12 shrink-0">
         <div className="text-[11px] font-semibold text-foreground leading-none">{name}</div>
         <div className="mt-0.5 font-mono text-[9px] text-muted-foreground/50">{ms}ms</div>
       </div>
-      <div className="flex-1 h-1.5 rounded-full bg-foreground/[0.06]">
-        <div
+      <div className="flex-1 h-1.5 rounded-full bg-foreground/[0.06]" style={{ overflow: 'hidden' }}>
+        <motion.div
           className="h-full rounded-full bg-primary/60"
-          style={{ width: `${(ms / 500) * 100}%` }}
+          style={{ width: `${(ms / 500) * 100}%`, transformOrigin: 'left' }}
+          initial={{ scaleX: reduced ? 1 : 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={reduced ? { duration: 0 } : {
+            type: 'spring',
+            stiffness: 70,
+            damping: 12,
+            delay: 0.2 + index * 0.1,
+          }}
         />
       </div>
       <div className="w-20 text-right font-mono text-[9px] uppercase tracking-[0.1em] text-muted-foreground/40 shrink-0">
@@ -664,15 +807,15 @@ function MotionBlock() {
       <div className="flex flex-col divide-y divide-border/40">
         {EASING_DEFS.map((e, i) => {
           const appliesTok = [s.easing_entrada_use, s.easing_suave_use, s.easing_rebote_use] as const;
-          return <EasingRow key={e.name} name={e.name} css={e.css} svgPath={e.svgPath} applies={appliesTok[i]} />;
+          return <EasingRow key={e.name} name={e.name} css={e.css} svgPath={e.svgPath} applies={appliesTok[i]} index={i} />;
         })}
       </div>
       {/* Separator */}
       <div className="h-px bg-border/60 my-4" />
-      {/* Durations */}
+      {/* Durations — spring physics on enter */}
       <div className="flex flex-col gap-3">
-        {DURATION_DEFS.map(d => (
-          <DurationBar key={d.name} name={d.name} ms={d.ms} use={d.use} />
+        {DURATION_DEFS.map((d, i) => (
+          <DurationBar key={d.name} name={d.name} ms={d.ms} use={d.use} index={i} />
         ))}
       </div>
     </BentoCard>
@@ -683,6 +826,8 @@ function MotionBlock() {
 
 function InputsBlock() {
   const s = useS();
+  const reduced = useReducedMotion() ?? false;
+  const itemV = makeItemAnim(reduced);
   const [nameVal, setNameVal] = useState('');
   const [emailVal, setEmailVal] = useState('');
   const [msgVal, setMsgVal] = useState('');
@@ -691,50 +836,58 @@ function InputsBlock() {
     <BentoCard className="flex h-full flex-col gap-4">
       <Label>{s.inputs}</Label>
 
-      {/* Texto */}
-      <div className="flex flex-col gap-2">
-        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Texto</span>
-        <input
-          className="input-glass"
-          placeholder={s.input_name}
-          value={nameVal}
-          onChange={e => setNameVal(e.target.value)}
-        />
-        <input
-          className="input-glass"
-          type="email"
-          placeholder={s.input_email}
-          value={emailVal}
-          onChange={e => setEmailVal(e.target.value)}
-        />
-      </div>
+      <motion.div
+        className="flex flex-col gap-4"
+        variants={makeBlockAnim(0.15, 0.09)}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
+        {/* Texto */}
+        <motion.div variants={itemV} className="flex flex-col gap-2">
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Texto</span>
+          <input
+            className="input-glass"
+            placeholder={s.input_name}
+            value={nameVal}
+            onChange={e => setNameVal(e.target.value)}
+          />
+          <input
+            className="input-glass"
+            type="email"
+            placeholder={s.input_email}
+            value={emailVal}
+            onChange={e => setEmailVal(e.target.value)}
+          />
+        </motion.div>
 
-      {/* Área de texto */}
-      <div className="flex flex-col gap-2">
-        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Área de texto</span>
-        <textarea
-          className="input-glass resize-none"
-          rows={3}
-          placeholder={s.input_message}
-          value={msgVal}
-          onChange={e => setMsgVal(e.target.value)}
-        />
-      </div>
+        {/* Área de texto */}
+        <motion.div variants={itemV} className="flex flex-col gap-2">
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Área de texto</span>
+          <textarea
+            className="input-glass resize-none"
+            rows={3}
+            placeholder={s.input_message}
+            value={msgVal}
+            onChange={e => setMsgVal(e.target.value)}
+          />
+        </motion.div>
 
-      {/* Estados */}
-      <div className="flex flex-col gap-2">
-        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Estados</span>
-        <input
-          className="input-glass input-glass--focus"
-          readOnly
-          placeholder={s.input_focused}
-        />
-        <input
-          className="input-glass"
-          disabled
-          placeholder={s.input_disabled}
-        />
-      </div>
+        {/* Estados */}
+        <motion.div variants={itemV} className="flex flex-col gap-2">
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Estados</span>
+          <input
+            className="input-glass input-glass--focus"
+            readOnly
+            placeholder={s.input_focused}
+          />
+          <input
+            className="input-glass"
+            disabled
+            placeholder={s.input_disabled}
+          />
+        </motion.div>
+      </motion.div>
     </BentoCard>
   );
 }
@@ -743,39 +896,57 @@ function InputsBlock() {
 
 function SpacingBlock() {
   const s = useS();
+  const reduced = useReducedMotion() ?? false;
+  const barV  = makeBarAnim(reduced);
+  const itemV = makeItemAnim(reduced);
   const MAX_PX = 64;
   return (
     <BentoCard className="flex h-full flex-col">
       <Label>{s.spacing}</Label>
-      <div className="flex flex-col gap-2">
+      {/* Timeline sequence — bars grow left-to-right in cascade */}
+      <motion.div
+        className="flex flex-col gap-2"
+        variants={makeBlockAnim(0.15, 0.055)}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+      >
         {SPACING_DEFS.map(({ px, label }) => (
           <div key={px} className="flex items-center gap-3">
             <div className="w-7 shrink-0 text-right font-mono text-[9px] text-muted-foreground/40 tabular-nums">{px}</div>
-            <div className="flex-1 h-[18px] rounded-[5px] bg-foreground/[0.04]">
-              <div
+            <div className="flex-1 h-[18px] rounded-[5px] bg-foreground/[0.04]" style={{ overflow: 'hidden' }}>
+              <motion.div
+                variants={barV}
                 className="h-full rounded-[5px] bg-primary/20"
-                style={{ width: `${(px / MAX_PX) * 100}%` }}
+                style={{ width: `${(px / MAX_PX) * 100}%`, transformOrigin: 'left' }}
               />
             </div>
             <div className="w-9 shrink-0 text-[10px] font-semibold text-foreground/60">{label}</div>
           </div>
         ))}
-      </div>
+      </motion.div>
+      {/* Grid tokens appear after bars finish */}
       <div className="mt-auto pt-4 border-t border-border/40">
         <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40 mb-2">{s.spacing_grid}</div>
-        <div className="flex flex-wrap gap-2">
+        <motion.div
+          className="flex flex-wrap gap-2"
+          variants={makeBlockAnim(0.65, 0.07)}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+        >
           {[
             { k: 'max-w', v: '1200px' },
             { k: 'gap',   v: '1rem' },
             { k: 'cols',  v: '1→2→3' },
             { k: 'pad',   v: '1.5rem' },
           ].map(item => (
-            <div key={item.k} className="flex items-center gap-1.5 rounded-[8px] border border-border/50 bg-white/40 px-2.5 py-1.5">
+            <motion.div key={item.k} variants={itemV} className="flex items-center gap-1.5 rounded-[8px] border border-border/50 bg-white/40 px-2.5 py-1.5">
               <span className="font-mono text-[9px] text-muted-foreground/50">{item.k}</span>
               <span className="font-mono text-[9px] font-semibold text-primary">{item.v}</span>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </BentoCard>
   );
@@ -783,7 +954,15 @@ function SpacingBlock() {
 
 /* ── Header ──────────────────────────────────────────────────── */
 
-function Header() {
+function Header({ onReplay }: { onReplay: () => void }) {
+  const [spinning, setSpinning] = useState(false);
+
+  const handleClick = () => {
+    setSpinning(true);
+    onReplay();
+    setTimeout(() => setSpinning(false), 700);
+  };
+
   return (
     <motion.header
       initial={{ opacity: 0, y: 16 }}
@@ -799,12 +978,24 @@ function Header() {
           Design System<span className="text-primary">.</span>
         </h1>
       </div>
-      <div className="glass-pill flex items-center gap-2 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
-        <span className="size-[6px] rounded-full bg-primary" style={{ boxShadow: '0 0 0 3px rgba(0,64,255,0.12)' }} />
+      <motion.button
+        onClick={handleClick}
+        className="glass-pill flex items-center gap-2 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 cursor-pointer select-none"
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.94 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+        aria-label="Replay animations"
+      >
+        <motion.span
+          animate={spinning ? { rotate: 360 } : { rotate: 0 }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          className="inline-block text-primary text-[13px] leading-none"
+          style={{ display: 'inline-block' }}
+        >↺</motion.span>
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground sm:text-[11px]">
-          v1.0 · 2026
+          Animate again
         </span>
-      </div>
+      </motion.button>
     </motion.header>
   );
 }
@@ -812,21 +1003,24 @@ function Header() {
 /* ── Main export ─────────────────────────────────────────────── */
 
 export function DesignSystemPage({ profileSrc = '', locale = 'es' }: { profileSrc?: string; locale?: 'es' | 'en' }) {
+  const [replayKey, setReplayKey] = useState(0);
+
   return (
     <LocaleCtx.Provider value={STRINGS[locale]}>
     <div className="ds-bg ds-noise relative min-h-screen overflow-x-hidden antialiased" style={{ letterSpacing: '-0.005em' }}>
       <Bubbles />
 
       <div className="relative z-[2] mx-auto max-w-[1200px] px-4 py-10 pb-24 sm:px-6 sm:py-12 sm:pb-28 lg:px-8">
-        <Header />
+        <Header onReplay={() => setReplayKey(k => k + 1)} />
 
         {/*
           Bento grid — responsive:
           mobile  → 1 col stacked
           sm 640  → 2 cols
           lg 1024 → 3 cols (Profile | Buttons | Typography↕, Colors↔ | Typography↕, Icono↔ | Images)
+          key={replayKey} → fuerza remount completo para reproducir todas las animaciones
         */}
-        <div className="ds-grid">
+        <div key={replayKey} className="ds-grid">
 
           {/* Profile — 4:5 */}
           <motion.div {...fadeUp(0)} className="ds-area-profile">
