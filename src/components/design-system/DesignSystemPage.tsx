@@ -60,6 +60,15 @@ const STRINGS = {
     input_message: 'Cuéntame sobre tu proyecto...',
     input_focused: 'Estado: foco activo',
     input_disabled: 'Campo deshabilitado',
+    type_display_use: 'Hero · portada',
+    type_h1_use: 'Título de página',
+    type_body_use: 'Texto corrido',
+    type_caption_use: 'Mono · etiquetas',
+    easing_entrada_use: 'Entradas · fade-up',
+    easing_suave_use: 'Hover · transiciones',
+    easing_rebote_use: 'Menú · tooltips',
+    spacing: 'Espaciado',
+    spacing_grid: 'Rejilla',
   },
   en: {
     tagline: 'I think like a designer. I build like an engineer.',
@@ -89,6 +98,15 @@ const STRINGS = {
     input_message: 'Tell me about your project...',
     input_focused: 'State: focused',
     input_disabled: 'Disabled field',
+    type_display_use: 'Hero · cover',
+    type_h1_use: 'Page title',
+    type_body_use: 'Running text',
+    type_caption_use: 'Mono · labels',
+    easing_entrada_use: 'Entries · fade-up',
+    easing_suave_use: 'Hover · transitions',
+    easing_rebote_use: 'Menu · tooltips',
+    spacing: 'Spacing',
+    spacing_grid: 'Grid',
   },
 } as const;
 
@@ -180,6 +198,17 @@ const DURATION_DEFS = [
   { name: 'Rápido', ms: 150, use: 'Hover · Focus' },
   { name: 'Base',   ms: 280, use: 'Transiciones' },
   { name: 'Lento',  ms: 500, use: 'Entradas' },
+] as const;
+
+const SPACING_DEFS = [
+  { px: 4,  label: 'Micro' },
+  { px: 8,  label: 'XS' },
+  { px: 12, label: 'SM' },
+  { px: 16, label: 'Base' },
+  { px: 24, label: 'MD' },
+  { px: 32, label: 'LG' },
+  { px: 48, label: 'XL' },
+  { px: 64, label: '2XL' },
 ] as const;
 
 /* ═══════════════════════════════════════════════════════════════
@@ -363,13 +392,16 @@ function TypographyBlock() {
       </div>
       <div className="mt-4 flex flex-col divide-y divide-dashed divide-border">
         {[
-          { role: 'Display', sample: s.display_sample,  style: { fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1 } },
-          { role: 'H1',      sample: s.h1_sample,       style: { fontSize: 17, fontWeight: 700, letterSpacing: '-0.02em' } },
-          { role: 'Body',    sample: s.body_sample,     style: { fontSize: 13, fontWeight: 400, color: '#5F6B7A', lineHeight: 1.6 } },
-          { role: 'Caption', sample: 'REACT · TYPESCRIPT · ASTRO', style: { fontSize: 10, fontFamily: 'var(--font-mono)', color: '#94A3B8', letterSpacing: '0.14em' } },
+          { role: 'Display', usage: s.type_display_use, sample: s.display_sample,  style: { fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1 } },
+          { role: 'H1',      usage: s.type_h1_use,      sample: s.h1_sample,       style: { fontSize: 17, fontWeight: 700, letterSpacing: '-0.02em' } },
+          { role: 'Body',    usage: s.type_body_use,     sample: s.body_sample,     style: { fontSize: 13, fontWeight: 400, color: '#5F6B7A', lineHeight: 1.6 } },
+          { role: 'Caption', usage: s.type_caption_use,  sample: 'REACT · TYPESCRIPT · ASTRO', style: { fontSize: 10, fontFamily: 'var(--font-mono)', color: '#94A3B8', letterSpacing: '0.14em' } },
         ].map(row => (
           <div key={row.role} className="flex items-baseline gap-4 py-[10px] first:pt-0">
-            <span className="w-12 shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{row.role}</span>
+            <div className="w-12 shrink-0">
+              <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{row.role}</div>
+              <div className="mt-0.5 font-mono text-[8px] leading-none text-muted-foreground/25">{row.usage}</div>
+            </div>
             <span style={row.style as React.CSSProperties}>{row.sample}</span>
           </div>
         ))}
@@ -557,7 +589,7 @@ function ImagesBlock() {
 
 /* ── 8. Motion ───────────────────────────────────────────────── */
 
-function EasingRow({ name, css, svgPath }: { name: string; css: string; svgPath: string }) {
+function EasingRow({ name, css, svgPath, applies }: { name: string; css: string; svgPath: string; applies: string }) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -578,10 +610,11 @@ function EasingRow({ name, css, svgPath }: { name: string; css: string; svgPath:
         <path d={svgPath} fill="none" stroke="#0040FF" strokeWidth={2.2} strokeLinecap="round" />
       </svg>
 
-      {/* Name + CSS formula */}
+      {/* Name + CSS formula + applies */}
       <div className="flex-1 min-w-0">
         <div className="text-[12px] font-semibold text-foreground leading-none">{name}</div>
         <div className="mt-0.5 font-mono text-[9px] text-muted-foreground/50 truncate">{css}</div>
+        <div className="mt-0.5 text-[9px] text-muted-foreground/35 truncate">{applies}</div>
       </div>
 
       {/* Demo track */}
@@ -629,9 +662,10 @@ function MotionBlock() {
       <Label>{s.motion}</Label>
       {/* Easing curves */}
       <div className="flex flex-col divide-y divide-border/40">
-        {EASING_DEFS.map(e => (
-          <EasingRow key={e.name} name={e.name} css={e.css} svgPath={e.svgPath} />
-        ))}
+        {EASING_DEFS.map((e, i) => {
+          const appliesTok = [s.easing_entrada_use, s.easing_suave_use, s.easing_rebote_use] as const;
+          return <EasingRow key={e.name} name={e.name} css={e.css} svgPath={e.svgPath} applies={appliesTok[i]} />;
+        })}
       </div>
       {/* Separator */}
       <div className="h-px bg-border/60 my-4" />
@@ -700,6 +734,48 @@ function InputsBlock() {
           disabled
           placeholder={s.input_disabled}
         />
+      </div>
+    </BentoCard>
+  );
+}
+
+/* ── 10. Spacing ─────────────────────────────────────────────── */
+
+function SpacingBlock() {
+  const s = useS();
+  const MAX_PX = 64;
+  return (
+    <BentoCard className="flex h-full flex-col">
+      <Label>{s.spacing}</Label>
+      <div className="flex flex-col gap-2">
+        {SPACING_DEFS.map(({ px, label }) => (
+          <div key={px} className="flex items-center gap-3">
+            <div className="w-7 shrink-0 text-right font-mono text-[9px] text-muted-foreground/40 tabular-nums">{px}</div>
+            <div className="flex-1 h-[18px] rounded-[5px] bg-foreground/[0.04]">
+              <div
+                className="h-full rounded-[5px] bg-primary/20"
+                style={{ width: `${(px / MAX_PX) * 100}%` }}
+              />
+            </div>
+            <div className="w-9 shrink-0 text-[10px] font-semibold text-foreground/60">{label}</div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-auto pt-4 border-t border-border/40">
+        <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40 mb-2">{s.spacing_grid}</div>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { k: 'max-w', v: '1200px' },
+            { k: 'gap',   v: '1rem' },
+            { k: 'cols',  v: '1→2→3' },
+            { k: 'pad',   v: '1.5rem' },
+          ].map(item => (
+            <div key={item.k} className="flex items-center gap-1.5 rounded-[8px] border border-border/50 bg-white/40 px-2.5 py-1.5">
+              <span className="font-mono text-[9px] text-muted-foreground/50">{item.k}</span>
+              <span className="font-mono text-[9px] font-semibold text-primary">{item.v}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </BentoCard>
   );
@@ -782,13 +858,18 @@ export function DesignSystemPage({ profileSrc = '', locale = 'es' }: { profileSr
             <ImagesBlock />
           </motion.div>
 
+          {/* Spacing */}
+          <motion.div {...fadeUp(6)} className="ds-area-spacing h-full">
+            <SpacingBlock />
+          </motion.div>
+
           {/* Inputs */}
-          <motion.div {...fadeUp(6)} className="ds-area-inputs h-full">
+          <motion.div {...fadeUp(7)} className="ds-area-inputs h-full">
             <InputsBlock />
           </motion.div>
 
           {/* Motion */}
-          <motion.div {...fadeUp(7)} className="ds-area-motion h-full">
+          <motion.div {...fadeUp(8)} className="ds-area-motion h-full">
             <MotionBlock />
           </motion.div>
         </div>
