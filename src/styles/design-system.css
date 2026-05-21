@@ -216,6 +216,7 @@
     "typography"
     "icono"
     "images"
+    "spacing"
     "inputs"
     "motion";
 }
@@ -229,6 +230,7 @@
       "typography typography"
       "icono      icono"
       "images     images"
+      "spacing    spacing"
       "inputs     motion";
   }
 }
@@ -240,7 +242,7 @@
       "profile  buttons     typography"
       "colors   colors      typography"
       "icono    icono       images"
-      "inputs   motion      motion";
+      "spacing  inputs      motion";
   }
 }
 
@@ -250,6 +252,7 @@
 .ds-area-typography  { grid-area: typography;  }
 .ds-area-iconography { grid-area: icono;       }
 .ds-area-images      { grid-area: images;      }
+.ds-area-spacing     { grid-area: spacing;     }
 .ds-area-inputs      { grid-area: inputs;      }
 .ds-area-motion      { grid-area: motion;      }
 
