@@ -53,6 +53,13 @@ const STRINGS = {
     images: 'Imágenes',
     border: 'Borde',
     shadow: 'Sombra',
+    motion: 'Movimiento',
+    inputs: 'Formularios',
+    input_name: 'Nombre completo',
+    input_email: 'tu@empresa.com',
+    input_message: 'Cuéntame sobre tu proyecto...',
+    input_focused: 'Estado: foco activo',
+    input_disabled: 'Campo deshabilitado',
   },
   en: {
     tagline: 'I think like a designer. I build like an engineer.',
@@ -75,6 +82,13 @@ const STRINGS = {
     images: 'Images',
     border: 'Border',
     shadow: 'Shadow',
+    motion: 'Motion',
+    inputs: 'Forms',
+    input_name: 'Full name',
+    input_email: 'you@company.com',
+    input_message: 'Tell me about your project...',
+    input_focused: 'State: focused',
+    input_disabled: 'Disabled field',
   },
 } as const;
 
@@ -151,6 +165,22 @@ const PERSONAL_PLACEMENTS = (() => {
   }
   return out;
 })();
+
+/* ═══════════════════════════════════════════════════════════════
+   MOTION BLOCK CONSTANTS
+═══════════════════════════════════════════════════════════════ */
+
+const EASING_DEFS = [
+  { name: 'Entrada', css: 'cubic-bezier(0.22, 1, 0.36, 1)', svgPath: 'M 0 72 C 15.84 0 25.92 0 72 0' },
+  { name: 'Suave',   css: 'cubic-bezier(0.4, 0, 0.2, 1)',   svgPath: 'M 0 72 C 28.8 72 14.4 0 72 0' },
+  { name: 'Rebote',  css: 'cubic-bezier(0.34, 1.56, 0.64, 1)', svgPath: 'M 0 72 C 24.48 -40.32 46.08 0 72 0' },
+] as const;
+
+const DURATION_DEFS = [
+  { name: 'Rápido', ms: 150, use: 'Hover · Focus' },
+  { name: 'Base',   ms: 280, use: 'Transiciones' },
+  { name: 'Lento',  ms: 500, use: 'Entradas' },
+] as const;
 
 /* ═══════════════════════════════════════════════════════════════
    BENTO BLOCKS
@@ -525,6 +555,156 @@ function ImagesBlock() {
   );
 }
 
+/* ── 8. Motion ───────────────────────────────────────────────── */
+
+function EasingRow({ name, css, svgPath }: { name: string; css: string; svgPath: string }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div className="flex items-center gap-3 py-1.5">
+      {/* SVG curve preview */}
+      <svg
+        width={44}
+        height={44}
+        viewBox="-6 -18 84 96"
+        overflow="visible"
+        className="shrink-0"
+      >
+        {/* baseline */}
+        <line x1={0} y1={72} x2={72} y2={72} stroke="rgba(17,24,39,0.08)" strokeWidth={1.5} />
+        {/* top dashed line */}
+        <line x1={0} y1={0} x2={72} y2={0} stroke="rgba(17,24,39,0.08)" strokeWidth={1.5} strokeDasharray="4 3" />
+        {/* easing curve */}
+        <path d={svgPath} fill="none" stroke="#0040FF" strokeWidth={2.2} strokeLinecap="round" />
+      </svg>
+
+      {/* Name + CSS formula */}
+      <div className="flex-1 min-w-0">
+        <div className="text-[12px] font-semibold text-foreground leading-none">{name}</div>
+        <div className="mt-0.5 font-mono text-[9px] text-muted-foreground/50 truncate">{css}</div>
+      </div>
+
+      {/* Demo track */}
+      <div
+        className="relative h-5 w-20 rounded-full bg-foreground/5 shrink-0 overflow-hidden"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div
+          className="absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-primary"
+          style={{
+            left: hovered ? 'calc(100% - 14px)' : '2px',
+            transition: hovered ? `left 600ms ${css}` : 'left 0ms',
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function DurationBar({ name, ms, use }: { name: string; ms: number; use: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="w-12 shrink-0">
+        <div className="text-[11px] font-semibold text-foreground leading-none">{name}</div>
+        <div className="mt-0.5 font-mono text-[9px] text-muted-foreground/50">{ms}ms</div>
+      </div>
+      <div className="flex-1 h-1.5 rounded-full bg-foreground/[0.06]">
+        <div
+          className="h-full rounded-full bg-primary/60"
+          style={{ width: `${(ms / 500) * 100}%` }}
+        />
+      </div>
+      <div className="w-20 text-right font-mono text-[9px] uppercase tracking-[0.1em] text-muted-foreground/40 shrink-0">
+        {use}
+      </div>
+    </div>
+  );
+}
+
+function MotionBlock() {
+  const s = useS();
+  return (
+    <BentoCard className="flex h-full flex-col">
+      <Label>{s.motion}</Label>
+      {/* Easing curves */}
+      <div className="flex flex-col divide-y divide-border/40">
+        {EASING_DEFS.map(e => (
+          <EasingRow key={e.name} name={e.name} css={e.css} svgPath={e.svgPath} />
+        ))}
+      </div>
+      {/* Separator */}
+      <div className="h-px bg-border/60 my-4" />
+      {/* Durations */}
+      <div className="flex flex-col gap-3">
+        {DURATION_DEFS.map(d => (
+          <DurationBar key={d.name} name={d.name} ms={d.ms} use={d.use} />
+        ))}
+      </div>
+    </BentoCard>
+  );
+}
+
+/* ── 9. Inputs ───────────────────────────────────────────────── */
+
+function InputsBlock() {
+  const s = useS();
+  const [nameVal, setNameVal] = useState('');
+  const [emailVal, setEmailVal] = useState('');
+  const [msgVal, setMsgVal] = useState('');
+
+  return (
+    <BentoCard className="flex h-full flex-col gap-4">
+      <Label>{s.inputs}</Label>
+
+      {/* Texto */}
+      <div className="flex flex-col gap-2">
+        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Texto</span>
+        <input
+          className="input-glass"
+          placeholder={s.input_name}
+          value={nameVal}
+          onChange={e => setNameVal(e.target.value)}
+        />
+        <input
+          className="input-glass"
+          type="email"
+          placeholder={s.input_email}
+          value={emailVal}
+          onChange={e => setEmailVal(e.target.value)}
+        />
+      </div>
+
+      {/* Área de texto */}
+      <div className="flex flex-col gap-2">
+        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Área de texto</span>
+        <textarea
+          className="input-glass resize-none"
+          rows={3}
+          placeholder={s.input_message}
+          value={msgVal}
+          onChange={e => setMsgVal(e.target.value)}
+        />
+      </div>
+
+      {/* Estados */}
+      <div className="flex flex-col gap-2">
+        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Estados</span>
+        <input
+          className="input-glass input-glass--focus"
+          readOnly
+          placeholder={s.input_focused}
+        />
+        <input
+          className="input-glass"
+          disabled
+          placeholder={s.input_disabled}
+        />
+      </div>
+    </BentoCard>
+  );
+}
+
 /* ── Header ──────────────────────────────────────────────────── */
 
 function Header() {
@@ -600,6 +780,16 @@ export function DesignSystemPage({ profileSrc = '', locale = 'es' }: { profileSr
           {/* Images */}
           <motion.div {...fadeUp(5)} className="ds-area-images h-full">
             <ImagesBlock />
+          </motion.div>
+
+          {/* Inputs */}
+          <motion.div {...fadeUp(6)} className="ds-area-inputs h-full">
+            <InputsBlock />
+          </motion.div>
+
+          {/* Motion */}
+          <motion.div {...fadeUp(7)} className="ds-area-motion h-full">
+            <MotionBlock />
           </motion.div>
         </div>
       </div>

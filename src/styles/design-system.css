@@ -215,18 +215,21 @@
     "colors"
     "typography"
     "icono"
-    "images";
+    "images"
+    "inputs"
+    "motion";
 }
 
 @media (min-width: 640px) {
   .ds-grid {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      "profile   buttons"
-      "colors    colors"
+      "profile    buttons"
+      "colors     colors"
       "typography typography"
-      "icono     icono"
-      "images    images";
+      "icono      icono"
+      "images     images"
+      "inputs     motion";
   }
 }
 
@@ -236,7 +239,8 @@
     grid-template-areas:
       "profile  buttons     typography"
       "colors   colors      typography"
-      "icono    icono        images";
+      "icono    icono       images"
+      "inputs   motion      motion";
   }
 }
 
@@ -246,6 +250,45 @@
 .ds-area-typography  { grid-area: typography;  }
 .ds-area-iconography { grid-area: icono;       }
 .ds-area-images      { grid-area: images;      }
+.ds-area-inputs      { grid-area: inputs;      }
+.ds-area-motion      { grid-area: motion;      }
+
+/* ---- Glass input ---- */
+.input-glass {
+  width: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.70));
+  border: 1px solid #E5E7E0;
+  box-shadow:
+    inset 0 1.5px 4px rgba(17,24,39,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.80);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: #111827;
+  outline: none;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.input-glass::placeholder { color: #94A3B8; }
+.input-glass:focus {
+  border-color: #0040FF;
+  box-shadow:
+    inset 0 1.5px 4px rgba(17,24,39,0.04),
+    0 0 0 3px rgba(0,64,255,0.10);
+}
+.input-glass:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* Demo static focus state */
+.input-glass--focus {
+  border-color: #0040FF;
+  box-shadow:
+    inset 0 1.5px 4px rgba(17,24,39,0.04),
+    0 0 0 3px rgba(0,64,255,0.10);
+}
 
 /* ---- Dots pattern ---- */
 .ds-dots {
