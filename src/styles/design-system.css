@@ -199,6 +199,9 @@
   animation: ds-blink 1s step-end infinite;
 }
 
+/* ── Grid children: prevent horizontal blowout on mobile ── */
+.ds-grid > * { min-width: 0; }
+
 /* ════════════════════════════════════════════════
    Responsive Bento Grid
    mobile  → 1 col (stacked)
