@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import { motion, useMotionValue, useTransform, animate, useReducedMotion } from 'motion/react';
+import { motion, useMotionValue, useTransform, animate, useReducedMotion, useScroll } from 'motion/react';
 import {
   makeBlockAnim,
   makeItemAnim,
@@ -227,10 +227,16 @@ const SPACING_DEFS = [
 function ProfileBlock({ profileSrc }: { profileSrc: string }) {
   const s = useS();
   const reduced = useReducedMotion() ?? false;
+
+  // Mouse parallax (desktop hover)
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const imgX = useTransform(mx, [-0.5, 0.5], ['-8px', '8px']);
-  const imgY = useTransform(my, [-0.5, 0.5], ['-8px', '8px']);
+  const imgMouseX = useTransform(mx, [-0.5, 0.5], [-8, 8]);
+  const imgMouseY = useTransform(my, [-0.5, 0.5], [-8, 8]);
+
+  // Scroll parallax (mobile — image moves slower than page scroll)
+  const { scrollY } = useScroll();
+  const imgScrollY = useTransform(scrollY, [0, 600], [0, reduced ? 0 : -22]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (reduced) return;
@@ -250,14 +256,18 @@ function ProfileBlock({ profileSrc }: { profileSrc: string }) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <motion.img
-        src={profileSrc}
-        alt="Milo Agudelo"
-        className="absolute inset-0 h-full w-full object-cover object-top"
-        style={{ x: imgX, y: imgY, scale: 1.1 }}
-        loading="eager"
-        decoding="async"
-      />
+      {/* Scroll parallax wrapper — moves the image up as user scrolls */}
+      <motion.div className="absolute inset-0" style={{ y: imgScrollY }}>
+        <motion.img
+          src={profileSrc}
+          alt="Milo Agudelo"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+          style={{ x: imgMouseX, y: imgMouseY, scale: 1.12 }}
+          loading="eager"
+          decoding="async"
+        />
+      </motion.div>
+      {/* Text overlay — sits above scroll wrapper, does NOT parallax */}
       <motion.div
         className="absolute inset-x-0 bottom-0 flex flex-col justify-end px-6 pb-6 pt-20"
         style={{ background: 'linear-gradient(to top, rgba(5,10,25,0.82) 0%, rgba(5,10,25,0.4) 55%, transparent 100%)' }}
@@ -320,6 +330,7 @@ function ColorsBlock() {
             className="overflow-hidden rounded-[18px] border border-border/60 cursor-default"
             style={{ boxShadow: 'var(--sombra-suave)' }}
             whileHover={reduced ? {} : { y: -5, scale: 1.04 }}
+            whileTap={reduced ? {} : { y: -5, scale: 1.04 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           >
             <div className="h-[72px]" style={{ background: c.hex, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2)' }} />
@@ -445,6 +456,7 @@ function TypographyBlock() {
         <motion.span
           className="inline-block text-[60px] sm:text-[88px] cursor-default select-none"
           whileHover={reduced ? {} : { y: -3, rotate: -1 }}
+          whileTap={reduced ? {} : { y: -3, rotate: -1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 14 }}
         >Aa</motion.span>
         <span className="text-[16px] font-semibold text-muted-foreground">Satoshi</span>
@@ -505,7 +517,7 @@ function ButtonsBlock() {
               <path fill="#00832d" d="M62.5 0h-43v20.5h29V36l17-13.14V6c0-3.315-2.685-6-6-6z"/>
             </svg>
             Book a Call
-            <span className="transition-transform duration-200 group-hover/btn:translate-x-1">
+            <span className="transition-transform duration-100 group-hover/btn:translate-x-1 group-active/btn:translate-x-1">
               <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
             </span>
           </button>
@@ -516,7 +528,7 @@ function ButtonsBlock() {
             <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">{s.secondary}</span>
             <button className="btn-glass-secondary group/btn flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
               {s.view_projects}
-              <span className="transition-transform duration-200 group-hover/btn:translate-x-1">
+              <span className="transition-transform duration-100 group-hover/btn:translate-x-1 group-active/btn:translate-x-1">
                 <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
               </span>
             </button>
@@ -526,7 +538,7 @@ function ButtonsBlock() {
             <button className="btn-glass-secondary group/btn flex h-11 w-fit items-center gap-2 rounded-full px-5 font-sans text-sm font-bold text-foreground cursor-pointer">
               <HugeiconsIcon icon={Home01Icon} size={16} strokeWidth={1.5} />
               {s.home}
-              <span className="transition-transform duration-200 group-hover/btn:translate-x-1">
+              <span className="transition-transform duration-100 group-hover/btn:translate-x-1 group-active/btn:translate-x-1">
                 <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
               </span>
             </button>
@@ -607,6 +619,7 @@ function IconographyBlock() {
               variants={scaleV}
               className="flex flex-col items-center gap-2 rounded-[14px] border border-border/50 bg-white/50 py-3.5 cursor-default"
               whileHover={reduced ? {} : { scale: 1.12, rotate: 5 }}
+              whileTap={reduced ? {} : { scale: 1.12, rotate: 5 }}
               transition={{ type: 'spring', stiffness: 280, damping: 16 }}
             >
               <HugeiconsIcon icon={Icon} size={20} strokeWidth={1.5} className="text-foreground" />
@@ -929,7 +942,7 @@ function SpacingBlock() {
       <div className="mt-auto pt-4 border-t border-border/40">
         <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40 mb-2">{s.spacing_grid}</div>
         <motion.div
-          className="flex flex-wrap gap-2"
+          className="flex flex-nowrap gap-1 sm:gap-2"
           variants={makeBlockAnim(0.65, 0.07)}
           initial="hidden"
           whileInView="show"
@@ -941,9 +954,9 @@ function SpacingBlock() {
             { k: 'cols',  v: '1→2→3' },
             { k: 'pad',   v: '1.5rem' },
           ].map(item => (
-            <motion.div key={item.k} variants={itemV} className="flex items-center gap-1.5 rounded-[8px] border border-border/50 bg-white/40 px-2.5 py-1.5">
-              <span className="font-mono text-[9px] text-muted-foreground/50">{item.k}</span>
-              <span className="font-mono text-[9px] font-semibold text-primary">{item.v}</span>
+            <motion.div key={item.k} variants={itemV} className="flex shrink-0 items-center gap-1 sm:gap-1.5 rounded-[7px] sm:rounded-[8px] border border-border/50 bg-white/40 px-2 py-1 sm:px-2.5 sm:py-1.5">
+              <span className="font-mono text-[8px] sm:text-[9px] text-muted-foreground/50">{item.k}</span>
+              <span className="font-mono text-[8px] sm:text-[9px] font-semibold text-primary">{item.v}</span>
             </motion.div>
           ))}
         </motion.div>
