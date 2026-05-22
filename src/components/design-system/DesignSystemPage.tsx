@@ -598,6 +598,30 @@ function IconographyBlock() {
   const reduced = useReducedMotion() ?? false;
   const scaleV = makeScaleAnim(reduced);
   const itemV  = makeItemAnim(reduced);
+
+  // Magnetic hover — track which cell is active + grid column count
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [cols, setCols] = useState(4);
+
+  useEffect(() => {
+    const update = () => setCols(window.innerWidth >= 640 ? 8 : 4);
+    update();
+    window.addEventListener('resize', update, { passive: true });
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  /** Returns the spring target for each cell based on grid distance to hovered cell */
+  const getMagneticAnim = (idx: number) => {
+    if (hoveredIdx === null) return {};
+    const hRow = Math.floor(hoveredIdx / cols), hCol = hoveredIdx % cols;
+    const iRow = Math.floor(idx / cols),        iCol = idx % cols;
+    const dist = Math.sqrt((hCol - iCol) ** 2 + (hRow - iRow) ** 2);
+    if (dist === 0)  return { scale: 1.14, y: -6, rotate: 4 };
+    if (dist <= 1)   return { scale: 1.07, y: -3 };
+    if (dist <= 1.5) return { scale: 1.03, y: -1.5 };
+    return {};
+  };
+
   return (
     <BentoCard className="flex flex-col">
       <div className="flex flex-col flex-1">
@@ -613,17 +637,22 @@ function IconographyBlock() {
           whileInView="show"
           viewport={{ once: true }}
         >
-          {ICON_SET.map(({ Icon, name }) => (
-            <motion.div
-              key={name}
-              variants={scaleV}
-              className="flex flex-col items-center gap-2 rounded-[14px] border border-border/50 bg-white/50 py-3.5 cursor-default"
-              whileHover={reduced ? {} : { scale: 1.12, rotate: 5 }}
-              whileTap={reduced ? {} : { scale: 1.12, rotate: 5 }}
-              transition={{ type: 'spring', stiffness: 280, damping: 16 }}
-            >
-              <HugeiconsIcon icon={Icon} size={20} strokeWidth={1.5} className="text-foreground" />
-              <span className="font-mono text-[8.5px] uppercase tracking-[0.08em] text-muted-foreground/50 text-center">{name}</span>
+          {ICON_SET.map(({ Icon, name }, idx) => (
+            // Outer: entry animation via staggered variants
+            <motion.div key={name} variants={scaleV}>
+              {/* Inner: magnetic distance-based hover — separate layer so variants don't conflict */}
+              <motion.div
+                className="flex flex-col items-center gap-2 rounded-[14px] border border-border/50 bg-white/50 py-3.5 cursor-default h-full"
+                animate={reduced ? {} : getMagneticAnim(idx)}
+                transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+                onMouseEnter={() => { if (!reduced) setHoveredIdx(idx); }}
+                onMouseLeave={() => setHoveredIdx(null)}
+                onTouchStart={() => { if (!reduced) setHoveredIdx(idx); }}
+                onTouchEnd={() => setTimeout(() => setHoveredIdx(null), 350)}
+              >
+                <HugeiconsIcon icon={Icon} size={20} strokeWidth={1.5} className="text-foreground" />
+                <span className="font-mono text-[8.5px] uppercase tracking-[0.08em] text-muted-foreground/50 text-center">{name}</span>
+              </motion.div>
             </motion.div>
           ))}
         </motion.div>
