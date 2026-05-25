@@ -1,5 +1,5 @@
-import { useState, useEffect, createContext, useContext } from 'react';
-import { motion, useMotionValue, useTransform, animate, useReducedMotion, useScroll } from 'motion/react';
+import { useState, useEffect, useRef, createContext, useContext } from 'react';
+import { motion, useMotionValue, useTransform, animate, useReducedMotion, useScroll, useAnimate } from 'motion/react';
 import {
   makeBlockAnim,
   makeItemAnim,
@@ -76,6 +76,7 @@ const STRINGS = {
     easing_rebote_use: 'Menú · tooltips',
     spacing: 'Espaciado',
     spacing_grid: 'Rejilla',
+    input_error: 'Animación de error',
   },
   en: {
     tagline: 'I think like a designer. I build like an engineer.',
@@ -114,6 +115,7 @@ const STRINGS = {
     easing_rebote_use: 'Menu · tooltips',
     spacing: 'Spacing',
     spacing_grid: 'Grid',
+    input_error: 'Error animation',
   },
 } as const;
 
@@ -874,6 +876,32 @@ function InputsBlock() {
   const [emailVal, setEmailVal] = useState('');
   const [msgVal, setMsgVal] = useState('');
 
+  // Error shake state
+  const [nameError, setNameError] = useState(false);
+  const [shakeRef, shakeAnimate] = useAnimate();
+  const prevNameLen = useRef(0);
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    const prev = prevNameLen.current;
+    prevNameLen.current = val.length;
+
+    // Clear error as soon as the user moves away from 3 chars
+    if (nameError && val.length !== 3) setNameError(false);
+
+    // Fire once: exactly when the 3rd character is typed (not on backspace)
+    if (val.length === 3 && prev === 2 && !reduced) {
+      setNameError(true);
+      shakeAnimate(
+        shakeRef.current,
+        { x: [0, -10, 10, -8, 8, -5, 5, -2, 2, 0] },
+        { duration: 0.55, ease: 'linear' },
+      );
+    }
+
+    setNameVal(val);
+  };
+
   return (
     <BentoCard className="flex h-full flex-col gap-4">
       <Label>{s.inputs}</Label>
@@ -888,12 +916,22 @@ function InputsBlock() {
         {/* Texto */}
         <motion.div variants={itemV} className="flex flex-col gap-2">
           <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground/40">Texto</span>
-          <input
-            className="input-glass"
-            placeholder={s.input_name}
-            value={nameVal}
-            onChange={e => setNameVal(e.target.value)}
-          />
+          {/* shake wrapper — useAnimate targets this div */}
+          <div ref={shakeRef} className="flex flex-col gap-2">
+            <input
+              className={`input-glass ${nameError ? 'input-glass--error' : ''}`}
+              placeholder={s.input_name}
+              value={nameVal}
+              onChange={handleNameChange}
+            />
+            {/* Error message — always rendered to avoid layout shift, just fades */}
+            <p
+              className="font-mono text-[9px] text-red-400 transition-opacity duration-200"
+              style={{ opacity: nameError ? 1 : 0, marginTop: -4 }}
+            >
+              ↳ {s.input_error}
+            </p>
+          </div>
           <input
             className="input-glass"
             type="email"
