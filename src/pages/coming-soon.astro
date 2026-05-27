@@ -1,20 +1,27 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import profilePicture from '../assets/profile-picture.jpg';
 ---
 
 <BaseLayout
   title="Milo Agudelo — Desarrollador Full Stack"
   description="Portafolio de Milo Agudelo, desarrollador Full Stack especializado en rendimiento e impacto social."
+  htmlClass="bg-[#0d1b2a] select-none"
 >
   <canvas id="stars" class="fixed inset-0 z-0 pointer-events-none"></canvas>
 
   <main class="relative z-10 h-screen flex flex-col items-center justify-center px-6 text-center text-white overflow-hidden">
     <h1 class="flex flex-nowrap items-center justify-center gap-2 text-[max(0.95rem,5.5vw)] font-extrabold leading-none m-0 whitespace-nowrap">
       El portafolio de&nbsp;
-      <img
+      <Image
         id="avatar"
-        src="/profile-picture.jpg"
+        src={profilePicture}
         alt="Milo"
+        width={96}
+        height={96}
+        format="webp"
+        quality={85}
         class="inline-block w-12 h-12 sm:w-[max(2.5rem,5.5vw)] sm:h-[max(2.5rem,5.5vw)] rounded-xl sm:rounded-2xl object-cover object-top border-2 border-white shadow-[0_0_14px_rgba(255,255,255,0.2)] align-middle flex-shrink-0 transition-transform duration-100 hover:scale-105 cursor-pointer"
       />
       &nbsp;Milo
@@ -55,9 +62,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <!-- Lightbox -->
   <div id="lightbox" class="hidden fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md opacity-0 transition-opacity duration-300 cursor-default">
     <div id="lightbox-content" class="relative scale-95 transition-transform duration-300 w-fit">
-      <img
-        src="/profile-picture.jpg"
+      <Image
+        src={profilePicture}
         alt="Milo Agudelo"
+        width={profilePicture.width}
+        height={profilePicture.height}
+        format="webp"
+        quality={90}
         class="block max-h-[85vh] max-w-[85vw] w-auto h-auto rounded-2xl border-2 border-white shadow-[0_0_0_5px_#fff]"
       />
       <div class="absolute inset-x-6 bottom-[4%] mx-auto box-border flex w-max max-w-[calc(100%-3rem)] min-w-0 items-center justify-center gap-[clamp(0.9rem,1.4vw,1.25rem)] px-[clamp(1.35rem,5vw,4rem)] py-[clamp(0.9rem,2.2vh,1.55rem)] rounded-full border-2 border-white/60 bg-gradient-to-b from-white/95 to-white/70 backdrop-blur-md text-gray-800 whitespace-nowrap cursor-default shadow-[inset_0_1.5px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(200,200,200,0.3),0_4px_24px_rgba(0,0,0,0.1)]">

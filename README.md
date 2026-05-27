@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="src/pages/assets/readme/header.svg" width="100%"/>
+<img src="src/assets/header.svg" width="100%"/>
 
-<img src="src/pages/assets/readme/profile-picture.jpg" width="200"/>
+<img src="src/assets/profile-picture.jpg" width="200"/>
 
 <br/>
 
