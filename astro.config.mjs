@@ -10,8 +10,8 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://miloagudelo.com',
   redirects: {
-    '/': '/coming-soon',
-    '/en': '/en/coming-soon',
+    '/': '/design-system',
+    '/en': '/en/design-system',
   },
 
   fonts: [
