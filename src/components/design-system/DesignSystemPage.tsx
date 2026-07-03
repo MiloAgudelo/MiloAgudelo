@@ -253,8 +253,8 @@ function ProfileBlock({ profileSrc }: { profileSrc: string }) {
 
   return (
     <div
-      className="relative overflow-hidden rounded-[28px]"
-      style={{ boxShadow: 'var(--sombra-elevada)', aspectRatio: '4/5', width: '100%' }}
+      className="relative w-full overflow-hidden rounded-[28px] aspect-[4/5] sm:aspect-auto sm:h-full"
+      style={{ boxShadow: 'var(--sombra-elevada)' }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >

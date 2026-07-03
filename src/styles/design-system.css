@@ -178,7 +178,13 @@
   }
 }
 
+/* Mobile (1 col): profile sits alone, keeps its 4/5 intrinsic height. */
 .ds-area-profile     { grid-area: profile;     align-self: start; }
+/* sm+ : profile shares a row with the buttons card — stretch to fill the
+   row height so no empty gap appears below the photo (image is object-cover). */
+@media (min-width: 640px) {
+  .ds-area-profile   { align-self: stretch; }
+}
 .ds-area-buttons     { grid-area: buttons;     }
 .ds-area-colors      { grid-area: colors;      }
 .ds-area-typography  { grid-area: typography;  }
