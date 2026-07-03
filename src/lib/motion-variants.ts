@@ -27,7 +27,7 @@ export const makeItemAnim = (reduced: boolean) => ({
 
 /* ── Scale child — for swatches, icons, buttons ──────────────── */
 export const makeScaleAnim = (reduced: boolean) => ({
-  hidden: { opacity: 0, scale: reduced ? 1 : 0.8 },
+  hidden: { opacity: 0, scale: reduced ? 1 : 0.94 },
   show: {
     opacity: 1,
     scale: 1,
