@@ -129,7 +129,7 @@ const fadeUp = (i = 0) => ({
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { delay: i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+  transition: { delay: i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
 });
 
 /* ── Bento card shell ────────────────────────────────────────── */
@@ -157,7 +157,7 @@ function BentoCard({
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
+    <div className="mb-5 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/60">
       {children}
     </div>
   );
@@ -253,8 +253,8 @@ function ProfileBlock({ profileSrc }: { profileSrc: string }) {
 
   return (
     <div
-      className="relative overflow-hidden rounded-[28px]"
-      style={{ boxShadow: 'var(--sombra-elevada)', aspectRatio: '4/5', width: '100%' }}
+      className="relative w-full overflow-hidden rounded-[28px] aspect-[4/5] sm:aspect-auto sm:h-full"
+      style={{ boxShadow: 'var(--sombra-elevada)' }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -332,7 +332,7 @@ function ColorsBlock() {
             className="overflow-hidden rounded-[18px] border border-border/60 cursor-default"
             style={{ boxShadow: 'var(--sombra-suave)' }}
             whileHover={reduced ? {} : { y: -5, scale: 1.04 }}
-            whileTap={reduced ? {} : { y: -5, scale: 1.04 }}
+            whileTap={reduced ? {} : { scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           >
             <div className="h-[72px]" style={{ background: c.hex, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2)' }} />
@@ -397,11 +397,14 @@ const CHARS = CODE_TOKENS.flatMap(tok => [...tok.t]);
 const FULL_TEXT = CHARS.join('');
 
 function TypingCode() {
+  const reduced = useReducedMotion() ?? false;
   const [count, setCount]     = useState(0);
   const [erasing, setErasing] = useState(false);
   const [paused, setPaused]   = useState(false);
 
   useEffect(() => {
+    // Reduced motion: show the full snippet statically, skip the typing loop.
+    if (reduced) { setCount(CHARS.length); return; }
     if (paused) {
       const t = setTimeout(() => { setPaused(false); setErasing(true); }, 2200);
       return () => clearTimeout(t);
@@ -420,7 +423,7 @@ function TypingCode() {
     } else {
       setPaused(true);
     }
-  }, [count, erasing, paused]);
+  }, [count, erasing, paused, reduced]);
 
   const text = CHARS.slice(0, count).join('');
 
@@ -458,8 +461,8 @@ function TypographyBlock() {
         <motion.span
           className="inline-block text-[60px] sm:text-[88px] cursor-default select-none"
           whileHover={reduced ? {} : { y: -3, rotate: -1 }}
-          whileTap={reduced ? {} : { y: -3, rotate: -1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 14 }}
+          whileTap={reduced ? {} : { scale: 0.97 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
         >Aa</motion.span>
         <span className="text-[16px] font-semibold text-muted-foreground">Satoshi</span>
       </div>
@@ -473,8 +476,8 @@ function TypographyBlock() {
         {[
           { role: 'Display', usage: s.type_display_use, sample: s.display_sample,  style: { fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1 } },
           { role: 'H1',      usage: s.type_h1_use,      sample: s.h1_sample,       style: { fontSize: 17, fontWeight: 700, letterSpacing: '-0.02em' } },
-          { role: 'Body',    usage: s.type_body_use,     sample: s.body_sample,     style: { fontSize: 13, fontWeight: 400, color: '#5F6B7A', lineHeight: 1.6 } },
-          { role: 'Caption', usage: s.type_caption_use,  sample: 'REACT · TYPESCRIPT · ASTRO', style: { fontSize: 10, fontFamily: 'var(--font-mono)', color: '#94A3B8', letterSpacing: '0.14em' } },
+          { role: 'Body',    usage: s.type_body_use,     sample: s.body_sample,     style: { fontSize: 13, fontWeight: 400, color: 'var(--muted-foreground)', lineHeight: 1.6 } },
+          { role: 'Caption', usage: s.type_caption_use,  sample: 'REACT · TYPESCRIPT · ASTRO', style: { fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-tertiary)', letterSpacing: '0.14em' } },
         ].map(row => (
           <motion.div key={row.role} variants={rowV} className="flex items-baseline gap-4 py-[10px] first:pt-0">
             <div className="w-12 shrink-0">
@@ -670,7 +673,7 @@ function IconographyBlock() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: reduced ? 0 : 0.8, delay: 0.65 }}
+            transition={{ duration: reduced ? 0 : 0.4, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
             aria-hidden="true"
           >
             {PERSONAL_PLACEMENTS.map((item, i) => (
@@ -792,19 +795,19 @@ function EasingRow({ name, css, svgPath, applies, index }: { name: string; css: 
         <div className="mt-0.5 text-[9px] text-muted-foreground/35 truncate">{applies}</div>
       </div>
 
-      {/* Demo track */}
+      {/* Demo track — animates transform (GPU) rather than `left` (layout) */}
       <div
         className="relative h-5 w-20 rounded-full bg-foreground/5 shrink-0 overflow-hidden"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         <div
-          className="absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-primary"
+          className="absolute left-0.5 top-1/2 h-3 w-3 rounded-full bg-primary"
           style={{
-            left: hovered ? 'calc(100% - 14px)' : '2px',
+            transform: `translateY(-50%) translateX(${hovered && !reduced ? 'calc(80px - 12px - 8px)' : '0px'})`,
             transition: hovered
-              ? `left 600ms ${css}`
-              : 'left 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+              ? `transform 600ms ${css}`
+              : 'transform 400ms cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         />
       </div>
@@ -829,9 +832,9 @@ function DurationBar({ name, ms, use, index }: { name: string; ms: number; use: 
           viewport={{ once: true }}
           transition={reduced ? { duration: 0 } : {
             type: 'spring',
-            stiffness: 70,
-            damping: 12,
-            delay: 0.2 + index * 0.1,
+            stiffness: 120,
+            damping: 20,
+            delay: 0.2 + index * 0.05,
           }}
         />
       </div>
@@ -1062,7 +1065,7 @@ function Header({ onReplay }: { onReplay: () => void }) {
         onClick={handleClick}
         className="glass-pill flex items-center gap-2 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 cursor-pointer select-none"
         whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.94 }}
+        whileTap={{ scale: 0.97 }}
         transition={{ type: 'spring', stiffness: 400, damping: 22 }}
         aria-label="Replay animations"
       >

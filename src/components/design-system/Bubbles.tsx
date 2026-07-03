@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAnimationFrame } from 'motion/react';
+import { useAnimationFrame, useReducedMotion } from 'motion/react';
 
 const DEFS = [
   /* ── top-right cluster ─────────────────────────────── */
@@ -15,6 +15,7 @@ const DEFS = [
 type Refs<T> = React.MutableRefObject<(T | null)[]>;
 
 export function Bubbles() {
+  const reduced = useReducedMotion() ?? false;
   const [vp, setVp] = useState({ w: 1280, h: 800 });
 
   useEffect(() => {
@@ -150,6 +151,9 @@ export function Bubbles() {
 
   /* ── Animation frame ────────────────────────────────── */
   useAnimationFrame((time) => {
+    // Respect prefers-reduced-motion: leave bubbles static at their base
+    // position (no idle drift, mouse-follow, scroll parallax or drag spring).
+    if (reduced) return;
     DEFS.forEach((d, i) => {
       const circle  = circleRefs.current[i];
       const caustic = causticRefs.current[i];

@@ -23,26 +23,6 @@
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
-/* ---- Glass panel (main surface) ---- */
-.glass-panel {
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75));
-  border: 1px solid rgba(255,255,255,0.8);
-  box-shadow: var(--sombra-suave), var(--sombra-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 24px;
-}
-
-/* ---- Brand card (hero left) ---- */
-.glass-brand {
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.65));
-  border: 1px solid rgba(255,255,255,0.8);
-  box-shadow: var(--sombra-suave), var(--sombra-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 20px;
-}
-
 /* ---- Glass pill / badge ---- */
 .glass-pill {
   background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.7));
@@ -95,7 +75,7 @@
 /* ---- Secondary glass button ---- */
 .btn-glass-secondary {
   background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.68));
-  border: 1px solid #E5E7E0;
+  border: 1px solid var(--border);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.9),
     inset 0 -1px 0 rgba(17,24,39,0.03),
@@ -122,66 +102,15 @@
   transform: translateY(0);
 }
 
-/* ---- Project card ---- */
-.ds-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.78));
-  border: 1px solid #E5E7E0;
-  box-shadow: var(--sombra-suave);
-  border-radius: 24px;
-  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
-}
-.ds-card:hover {
-  background: linear-gradient(180deg, rgba(238,242,245,0.95), rgba(219,234,254,0.55));
-  box-shadow: var(--sombra-elevada);
-  transform: translateY(-2px);
-}
-.ds-card-ico {
-  background: linear-gradient(180deg, #EEF2F5, #DCE7F2);
-  border: 1px solid rgba(255,255,255,0.95);
-  box-shadow: inset 0 1px 0 #fff, 0 4px 10px rgba(0,64,255,0.08);
-}
-.ds-card .ds-arrow {
-  background: #fff;
-  border: 1px solid #E5E7E0;
-  box-shadow: var(--sombra-suave);
-  transition: background .25s ease, color .25s ease, border-color .25s;
-}
-.ds-card:hover .ds-arrow {
-  background: #0040FF;
-  color: #fff;
-  border-color: transparent;
-}
-
-
-/* ---- Section title ---- */
-.ds-sec-title {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #E5E7E0;
-  margin-bottom: 24px;
-}
-
 /* ---- Image frame ---- */
 .ds-frame {
   border-radius: 24px;
   border: 2px solid #fff;
-  background: linear-gradient(180deg, #EEF2F5, #DCE7F2);
-  box-shadow: 0 0 0 1px #E5E7E0, var(--sombra-elevada);
+  background: linear-gradient(180deg, var(--humo), var(--niebla));
+  box-shadow: 0 0 0 1px var(--border), var(--sombra-elevada);
   overflow: hidden;
   aspect-ratio: 16/9;
   position: relative;
-}
-
-/* ---- Color tweaker panel ---- */
-.ds-tweaker {
-  background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.88));
-  border: 1px solid rgba(255,255,255,0.8);
-  box-shadow: var(--sombra-elevada), var(--sombra-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 24px;
 }
 
 /* ---- Typing cursor ---- */
@@ -194,7 +123,7 @@
   width: 2px;
   height: 1.1em;
   vertical-align: text-bottom;
-  background: #111827;
+  background: var(--foreground);
   border-radius: 1px;
   animation: ds-blink 1s step-end infinite;
 }
@@ -249,7 +178,13 @@
   }
 }
 
+/* Mobile (1 col): profile sits alone, keeps its 4/5 intrinsic height. */
 .ds-area-profile     { grid-area: profile;     align-self: start; }
+/* sm+ : profile shares a row with the buttons card — stretch to fill the
+   row height so no empty gap appears below the photo (image is object-cover). */
+@media (min-width: 640px) {
+  .ds-area-profile   { align-self: stretch; }
+}
 .ds-area-buttons     { grid-area: buttons;     }
 .ds-area-colors      { grid-area: colors;      }
 .ds-area-typography  { grid-area: typography;  }
@@ -263,7 +198,7 @@
 .input-glass {
   width: 100%;
   background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.70));
-  border: 1px solid #E5E7E0;
+  border: 1px solid var(--border);
   box-shadow:
     inset 0 1.5px 4px rgba(17,24,39,0.05),
     inset 0 1px 0 rgba(255,255,255,0.80);
@@ -273,13 +208,13 @@
   padding: 10px 14px;
   font-family: var(--font-sans);
   font-size: 13px;
-  color: #111827;
+  color: var(--foreground);
   outline: none;
   transition: border-color .18s ease, box-shadow .18s ease;
 }
-.input-glass::placeholder { color: #94A3B8; }
+.input-glass::placeholder { color: var(--text-tertiary); }
 .input-glass:focus {
-  border-color: #0040FF;
+  border-color: var(--primary);
   box-shadow:
     inset 0 1.5px 4px rgba(17,24,39,0.04),
     0 0 0 3px rgba(0,64,255,0.10);
@@ -298,23 +233,10 @@
 
 /* Demo static focus state */
 .input-glass--focus {
-  border-color: #0040FF;
+  border-color: var(--primary);
   box-shadow:
     inset 0 1.5px 4px rgba(17,24,39,0.04),
     0 0 0 3px rgba(0,64,255,0.10);
 }
 
-/* ---- Dots pattern ---- */
-.ds-dots {
-  position: absolute;
-  width: 120px; height: 120px;
-  background-image: radial-gradient(circle, rgba(17,24,39,0.18) 1.2px, transparent 1.6px);
-  background-size: 14px 14px;
-  opacity: 0.55;
-  pointer-events: none;
-  mask-image: linear-gradient(135deg, #000 0%, transparent 70%);
-}
-.ds-dots-br {
-  mask-image: linear-gradient(315deg, #000 0%, transparent 70%);
-}
 
