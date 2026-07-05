@@ -43,7 +43,7 @@ Desarrollador Full Stack y estudiante de Ingeniería de Software en Colombia. Li
 
 <p align="center"><samp>backend/</samp></p>
 <p align="center">
-  <img src="https://skillicons.dev/icons?i=nodejs,strapi,supabase,firebase,postgres,sqlite&theme=dark" alt="Node.js, Strapi, Supabase, Firebase, PostgreSQL, SQLite"/>
+  <img src="https://skillicons.dev/icons?i=nodejs,supabase,firebase,postgres,sqlite&theme=dark" alt="Node.js, Supabase, Firebase, PostgreSQL, SQLite"/>
 </p>
 
 <p align="center"><samp>design-and-cloud/</samp></p>
@@ -52,7 +52,7 @@ Desarrollador Full Stack y estudiante de Ingeniería de Software en Colombia. Li
 </p>
 
 <p align="center"><sub>Donde más fuerte estoy: <b>Astro + TypeScript</b>, ahí vive la mayoría de mis repos.</sub></p>
-<p align="center"><sub>Integro pasarelas de pago del mercado colombiano (<b>Bold, Wompi, ePayco, MercadoPago</b>) y cada sitio sale optimizado para <b>SEO</b> y búsqueda con IA (<b>GEO</b>).</sub></p>
+<p align="center"><sub>También: <b>Strapi</b> como CMS, pasarelas de pago del mercado colombiano (<b>Bold, Wompi, ePayco, MercadoPago</b>), y cada sitio sale optimizado para <b>SEO</b> y búsqueda con IA (<b>GEO</b>).</sub></p>
 
 
 ### Ganador - TINKU Hackathon 2026
@@ -186,7 +186,7 @@ Full Stack Developer and Software Engineering student from Colombia. I lead with
 
 <p align="center"><samp>backend/</samp></p>
 <p align="center">
-  <img src="https://skillicons.dev/icons?i=nodejs,strapi,supabase,firebase,postgres,sqlite&theme=dark" alt="Node.js, Strapi, Supabase, Firebase, PostgreSQL, SQLite"/>
+  <img src="https://skillicons.dev/icons?i=nodejs,supabase,firebase,postgres,sqlite&theme=dark" alt="Node.js, Supabase, Firebase, PostgreSQL, SQLite"/>
 </p>
 
 <p align="center"><samp>design-and-cloud/</samp></p>
@@ -195,7 +195,7 @@ Full Stack Developer and Software Engineering student from Colombia. I lead with
 </p>
 
 <p align="center"><sub>Strongest with <b>Astro + TypeScript</b>: most of my repos live there.</sub></p>
-<p align="center"><sub>I integrate Colombian payment gateways (<b>Bold, Wompi, ePayco, MercadoPago</b>), and every site ships optimized for <b>SEO</b> and AI search (<b>GEO</b>).</sub></p>
+<p align="center"><sub>Also: <b>Strapi</b> as CMS, Colombian payment gateways (<b>Bold, Wompi, ePayco, MercadoPago</b>), and every site ships optimized for <b>SEO</b> and AI search (<b>GEO</b>).</sub></p>
 
 
 ### Winner - TINKU Hackathon 2026
