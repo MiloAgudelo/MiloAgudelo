@@ -9,7 +9,6 @@ import {
   ArrowRight01Icon,
   FolderOpenIcon,
   MapPinIcon,
-  Globe02Icon,
   CodeIcon,
 } from '@hugeicons/core-free-icons';
 
@@ -23,13 +22,13 @@ const STRINGS = {
     nav_contact: 'Contacto',
     book_call: 'Agenda una llamada',
     book_call_short: 'Agendar',
-    availability: 'Disponible para proyectos',
-    h1_line1: 'Pienso como diseñador.',
-    h1_line2: 'Construyo como ingeniero.',
-    sub: 'Diseño y construyo webs y productos digitales de punta a punta: del primer trazo en Figma al deploy en producción.',
+    role_badge: 'Full Stack Developer',
+    h1_line1: 'Hola, soy Milo.',
+    h1_line2: 'Llevo tu idea a producción.',
+    sub: 'Diseño y desarrollo en la misma persona: la interfaz nace en Figma, se construye con Astro y React, y sale a producción cuidada hasta el último pixel.',
     see_projects: 'Ver proyectos',
+    signal_available: 'Disponible para proyectos',
     signal_location: 'Colombia · GMT-5',
-    signal_remote: 'Trabajo remoto',
     signal_stack: 'Astro · React · TypeScript',
     photo_alt: 'Milo Agudelo, desarrollador full stack',
   },
@@ -40,13 +39,13 @@ const STRINGS = {
     nav_contact: 'Contact',
     book_call: 'Book a call',
     book_call_short: 'Book',
-    availability: 'Available for projects',
-    h1_line1: 'I think like a designer.',
-    h1_line2: 'I build like an engineer.',
-    sub: 'I design and build websites and digital products end to end: from the first Figma sketch to production deploy.',
+    role_badge: 'Full Stack Developer',
+    h1_line1: "Hey, I'm Milo.",
+    h1_line2: 'I take your idea to production.',
+    sub: 'Design and development in one person: the interface starts in Figma, gets built with Astro and React, and ships to production polished down to the last pixel.',
     see_projects: 'See projects',
+    signal_available: 'Available for projects',
     signal_location: 'Colombia · GMT-5',
-    signal_remote: 'Remote work',
     signal_stack: 'Astro · React · TypeScript',
     photo_alt: 'Milo Agudelo, full stack developer',
   },
@@ -128,41 +127,38 @@ function Navbar({ reduced }: { reduced: boolean }) {
   );
 }
 
-/* ── Availability badge ──────────────────────────────────────── */
+/* ── Role badge — static, no looping motion ──────────────────── */
 
-function AvailabilityBadge() {
+function RoleBadge() {
   const s = useS();
   return (
-    <div className="glass-pill inline-flex items-center gap-2.5 rounded-full px-4 py-2">
-      <span className="relative flex size-2" aria-hidden="true">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
-        <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-      </span>
+    <p className="glass-pill inline-flex items-center gap-2.5 rounded-full px-4 py-2">
+      <span className="size-2 rounded-full bg-primary" aria-hidden="true" />
       <span className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-        {s.availability}
+        {s.role_badge}
       </span>
-    </div>
+    </p>
   );
 }
 
 /* ── Signal row — real facts, no invented metrics ────────────── */
 
-const SIGNALS = [
-  { Icon: MapPinIcon,     key: 'signal_location' },
-  { Icon: Globe02Icon,    key: 'signal_remote' },
-  { Icon: CodeIcon,       key: 'signal_stack' },
-] as const;
-
 function SignalRow() {
   const s = useS();
   return (
     <div className="flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-border pt-5">
-      {SIGNALS.map(({ Icon, key }) => (
-        <div key={key} className="flex items-center gap-2 text-muted-foreground">
-          <HugeiconsIcon icon={Icon} size={14} strokeWidth={1.5} aria-hidden="true" />
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em]">{s[key]}</span>
-        </div>
-      ))}
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <span className="size-2 rounded-full bg-emerald-500" aria-hidden="true" />
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em]">{s.signal_available}</span>
+      </div>
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <HugeiconsIcon icon={MapPinIcon} size={14} strokeWidth={1.5} aria-hidden="true" />
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em]">{s.signal_location}</span>
+      </div>
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <HugeiconsIcon icon={CodeIcon} size={14} strokeWidth={1.5} aria-hidden="true" />
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em]">{s.signal_stack}</span>
+      </div>
     </div>
   );
 }
@@ -224,11 +220,11 @@ function Hero({ profileSrc, reduced }: { profileSrc: string; reduced: boolean })
     <section className="grid items-center gap-10 pb-16 pt-6 sm:pt-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pb-24">
       <div className="flex flex-col items-start">
         <motion.div {...enter(reduced, 0.05)}>
-          <AvailabilityBadge />
+          <RoleBadge />
         </motion.div>
 
         <h1
-          className="mt-6 text-[clamp(2.375rem,6.5vw,4.25rem)] font-black leading-[1.04] tracking-[-0.04em]"
+          className="mt-6 text-[clamp(2.25rem,5.8vw,3.75rem)] font-black leading-[1.06] tracking-[-0.035em]"
           style={{ textWrap: 'balance' }}
         >
           <motion.span {...enter(reduced, 0.1)} className="block text-foreground">

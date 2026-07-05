@@ -7,11 +7,15 @@ interface Props {
   title: string;
   description?: string;
   htmlClass?: string;
+  /** Ruta (relativa o absoluta) de la imagen para Open Graph / Twitter. */
+  ogImage?: string;
 }
 
-const { title, description = '', htmlClass = 'bg-background select-none' } = Astro.props;
+const { title, description = '', htmlClass = 'bg-background select-none', ogImage } = Astro.props;
 const lang = Astro.currentLocale ?? 'es';
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = ogImage ? new URL(ogImage, Astro.site) : undefined;
+const ogLocale = lang === 'es' ? 'es_CO' : 'en_US';
 
 // Strip the current locale prefix to get the base path for hreflang generation
 const basePath = lang === 'es'
@@ -31,6 +35,21 @@ const basePath = lang === 'es'
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Milo Agudelo" />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:locale" content={ogLocale} />
+    {ogImageURL && <meta property="og:image" content={ogImageURL} />}
+    <meta name="twitter:card" content={ogImageURL ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+
+    <slot name="head" />
 
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" />

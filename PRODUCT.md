@@ -16,6 +16,8 @@ Portafolio personal de Milo Agudelo (miloagudelo.com), full stack developer. El 
 
 "Pienso como diseñador. Construyo como ingeniero." Preciso, visual, cercano. Técnico sin frialdad: el toque personal viene del mundo scout/fotografía/montaña (patrón de iconos personal). Español primero, inglés como espejo.
 
+Voz del copy: personal y directa, en primera persona y hablándole al cliente ("Hola, soy Milo. Llevo tu idea a producción."). Referencia aprobada: rvmp.me (saludo con nombre, tono cercano, status de disponibilidad honesto). El patrón para frases de valor es verbo + para quién + resultado, siempre con hechos reales.
+
 ## Anti-references
 
 - Landings AI-slop: métricas inventadas (+50 proyectos, 100% satisfacción), buzzwords (seamless, cutting-edge), gradient text, plantilla SaaS genérica.

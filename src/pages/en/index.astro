@@ -5,11 +5,25 @@ import { LandingPage } from '@/components/landing/LandingPage';
 import profilePictureLight from '../../assets/profile-picture-light.jpg';
 
 const profilePic = await getImage({ src: profilePictureLight, format: 'webp', quality: 85 });
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Milo Agudelo',
+  jobTitle: 'Full Stack Developer',
+  url: 'https://miloagudelo.com/en',
+  image: new URL(profilePic.src, Astro.site).href,
+  sameAs: ['https://github.com/MiloAgudelo'],
+  knowsAbout: ['Astro', 'React', 'TypeScript', 'Interface design', 'Web development'],
+  address: { '@type': 'PostalAddress', addressCountry: 'CO' },
+};
 ---
 
 <BaseLayout
-  title="Milo Agudelo — Full Stack Developer"
-  description="I design and build websites and digital products end to end: from the first Figma sketch to production deploy."
+  title="Milo Agudelo · Full Stack Developer & Product Designer"
+  description="Design and development in one person: interfaces born in Figma, built with Astro and React, shipped to production. Available for projects."
+  ogImage={profilePic.src}
 >
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(personSchema)} />
   <LandingPage client:load profileSrc={profilePic.src} locale="en" />
 </BaseLayout>
