@@ -22,12 +22,13 @@ const STRINGS = {
     nav_contact: 'Contacto',
     book_call: 'Agenda una llamada',
     book_call_short: 'Agendar',
-    role_badge: 'Full Stack Developer',
+    eyebrow_role: 'Full Stack Developer',
+    eyebrow_status: 'disponible para proyectos',
     h1_line1: 'Hola, soy Milo.',
-    h1_line2: 'Llevo tu idea a producción.',
+    h1_line2_muted: 'Llevo tu idea',
+    h1_line2_strong: 'a producción.',
     sub: 'Diseño y desarrollo en la misma persona: la interfaz nace en Figma, se construye con Astro y React, y sale a producción cuidada hasta el último pixel.',
     see_projects: 'Ver proyectos',
-    signal_available: 'Disponible para proyectos',
     signal_location: 'Colombia · GMT-5',
     signal_stack: 'Astro · React · TypeScript',
     photo_alt: 'Milo Agudelo, desarrollador full stack',
@@ -39,12 +40,13 @@ const STRINGS = {
     nav_contact: 'Contact',
     book_call: 'Book a call',
     book_call_short: 'Book',
-    role_badge: 'Full Stack Developer',
+    eyebrow_role: 'Full Stack Developer',
+    eyebrow_status: 'available for projects',
     h1_line1: "Hey, I'm Milo.",
-    h1_line2: 'I take your idea to production.',
+    h1_line2_muted: 'I take your idea',
+    h1_line2_strong: 'to production.',
     sub: 'Design and development in one person: the interface starts in Figma, gets built with Astro and React, and ships to production polished down to the last pixel.',
     see_projects: 'See projects',
-    signal_available: 'Available for projects',
     signal_location: 'Colombia · GMT-5',
     signal_stack: 'Astro · React · TypeScript',
     photo_alt: 'Milo Agudelo, full stack developer',
@@ -127,16 +129,14 @@ function Navbar({ reduced }: { reduced: boolean }) {
   );
 }
 
-/* ── Role badge — static, no looping motion ──────────────────── */
+/* ── Eyebrow — kicker text above the H1 (kree8-style) ────────── */
 
-function RoleBadge() {
+function Eyebrow() {
   const s = useS();
   return (
-    <p className="glass-pill inline-flex items-center gap-2.5 rounded-full px-4 py-2">
-      <span className="size-2 rounded-full bg-primary" aria-hidden="true" />
-      <span className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-        {s.role_badge}
-      </span>
+    <p className="text-[13px] font-bold uppercase tracking-[0.06em] sm:text-sm">
+      <span className="text-muted-foreground">{s.eyebrow_role}</span>{' '}
+      <span className="text-primary">· {s.eyebrow_status}</span>
     </p>
   );
 }
@@ -147,10 +147,6 @@ function SignalRow() {
   const s = useS();
   return (
     <div className="flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-border pt-5">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <span className="size-2 rounded-full bg-emerald-500" aria-hidden="true" />
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em]">{s.signal_available}</span>
-      </div>
       <div className="flex items-center gap-2 text-muted-foreground">
         <HugeiconsIcon icon={MapPinIcon} size={14} strokeWidth={1.5} aria-hidden="true" />
         <span className="font-mono text-[10px] uppercase tracking-[0.14em]">{s.signal_location}</span>
@@ -220,18 +216,19 @@ function Hero({ profileSrc, reduced }: { profileSrc: string; reduced: boolean })
     <section className="grid items-center gap-10 pb-16 pt-6 sm:pt-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pb-24">
       <div className="flex flex-col items-start">
         <motion.div {...enter(reduced, 0.05)}>
-          <RoleBadge />
+          <Eyebrow />
         </motion.div>
 
         <h1
-          className="mt-6 text-[clamp(2.25rem,5.8vw,3.75rem)] font-black leading-[1.06] tracking-[-0.035em]"
+          className="mt-5 text-[clamp(2rem,4.6vw,3rem)] font-bold leading-[1.14] tracking-[-0.025em]"
           style={{ textWrap: 'balance' }}
         >
           <motion.span {...enter(reduced, 0.1)} className="block text-foreground">
             {s.h1_line1}
           </motion.span>
-          <motion.span {...enter(reduced, 0.16)} className="block text-primary">
-            {s.h1_line2}
+          <motion.span {...enter(reduced, 0.16)} className="block">
+            <span className="text-muted-foreground/80">{s.h1_line2_muted}</span>{' '}
+            <span className="text-foreground">{s.h1_line2_strong}</span>
           </motion.span>
         </h1>
 
