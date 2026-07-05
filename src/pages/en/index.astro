@@ -1,0 +1,15 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { LandingPage } from '@/components/landing/LandingPage';
+import profilePictureLight from '../../assets/profile-picture-light.jpg';
+
+const profilePic = await getImage({ src: profilePictureLight, format: 'webp', quality: 85 });
+---
+
+<BaseLayout
+  title="Milo Agudelo — Full Stack Developer"
+  description="I design and build websites and digital products end to end: from the first Figma sketch to production deploy."
+>
+  <LandingPage client:load profileSrc={profilePic.src} locale="en" />
+</BaseLayout>
