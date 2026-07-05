@@ -6,8 +6,6 @@
 
 <br/>
 
-<img src="https://komarev.com/ghpvc/?username=MiloAgudelo&color=0284c7&style=flat-square&label=Visitas" alt="Profile views"/>
-&nbsp;
 <a href="https://github.com/MiloAgudelo?tab=followers"><img src="https://img.shields.io/github/followers/MiloAgudelo?style=flat-square&color=0284c7&label=Seguidores" alt="Seguidores"/></a>
 
 <br/>
@@ -23,56 +21,38 @@
 
 Desarrollador Full Stack y estudiante de Ingeniería de Software en Colombia. Lidero con pensamiento de diseño y construyo con precisión de ingeniería.
 
-**Ganador del Hackathon TINKU 2026.** Me desenvuelvo bajo presión y entrego productos funcionales y pulidos en tiempo récord.
+**Ganador del Hackathon TINKU 2026.** Entrego productos funcionales y pulidos bajo presión.
 
-**Constructor de impacto social.** Construyo infraestructura digital para organizaciones sociales, grupos scouts y causas comunitarias. La tecnología existe para servir a las personas.
+**Constructor de impacto social.** Construyo infraestructura digital para organizaciones sociales, grupos scouts y causas comunitarias en toda Colombia.
 
 **Diseñador de nacimiento.** Ojo fuerte para UI/UX, tipografía, sistemas de color y jerarquía visual. Me importa tanto cómo se ve como cómo funciona.
 
 **Líder de proyectos.** Comunico con claridad, alineo equipos alrededor de una visión compartida, y sé cuándo avanzar rápido y cuándo frenar a pensar.
 
-**Obsesionado con el performance.** Mis sitios cargan rápido, siempre. Optimizo imágenes, lazy loading, bundle size, Core Web Vitals y caché en CDN hasta que el Lighthouse queda en verde. La velocidad no es un extra, es parte del diseño.
+**Obsesionado con el performance.** Optimizo imágenes, lazy loading, bundle size, Core Web Vitals y caché en CDN hasta que el Lighthouse queda en verde.
 
-**Desarrollo asistido por IA.** Uso la IA como instrumento de precisión. Diseño la arquitectura, tomo cada decisión de fondo y delego la ejecución repetitiva. Cada línea tiene intención detrás.
+**Desarrollo asistido por IA.** Uso la IA como instrumento de precisión: diseño la arquitectura, tomo cada decisión de fondo y delego la ejecución repetitiva.
 
 
-### Stack tecnológico
+<h3 align="center"><samp>$ ls tech-stack/</samp></h3>
 
-**Frontend**
+<p align="center"><samp>frontend/</samp></p>
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=astro,nextjs,react,ts,tailwind&theme=dark" alt="Astro, Next.js, React, TypeScript, Tailwind CSS"/>
+</p>
 
-![Astro](https://img.shields.io/badge/Astro-FF5D01?style=for-the-badge&logo=astro&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+<p align="center"><samp>backend/</samp></p>
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=nodejs,strapi,supabase,firebase,postgres,sqlite&theme=dark" alt="Node.js, Strapi, Supabase, Firebase, PostgreSQL, SQLite"/>
+</p>
 
-**Backend y bases de datos**
+<p align="center"><samp>design-and-cloud/</samp></p>
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=figma,vercel,cloudflare,git,github&theme=dark" alt="Figma, Vercel, Cloudflare, Git, GitHub"/>
+</p>
 
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![Strapi](https://img.shields.io/badge/Strapi-4945FF?style=for-the-badge&logo=strapi&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
-
-**Pasarelas de pago - mercado colombiano**
-
-![Bold](https://img.shields.io/badge/Bold-00B140?style=for-the-badge&logoColor=white)
-![Wompi](https://img.shields.io/badge/Wompi-7B2FBE?style=for-the-badge&logoColor=white)
-![ePayco](https://img.shields.io/badge/ePayco-003366?style=for-the-badge&logoColor=white)
-![MercadoPago](https://img.shields.io/badge/MercadoPago-009EE3?style=for-the-badge&logo=mercadopago&logoColor=white)
-
-**SEO y visibilidad**
-
-![SEO](https://img.shields.io/badge/SEO-4285F4?style=for-the-badge&logo=googlesearchconsole&logoColor=white)
-![GEO](https://img.shields.io/badge/GEO_AI_Search-CC785C?style=for-the-badge&logo=anthropic&logoColor=white)
-
-**Diseño y despliegue**
-
-![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+<p align="center"><sub>Donde más fuerte estoy: <b>Astro + TypeScript</b>, ahí vive la mayoría de mis repos.</sub></p>
+<p align="center"><sub>Integro pasarelas de pago del mercado colombiano (<b>Bold, Wompi, ePayco, MercadoPago</b>) y cada sitio sale optimizado para <b>SEO</b> y búsqueda con IA (<b>GEO</b>).</sub></p>
 
 
 ### Ganador - TINKU Hackathon 2026
@@ -94,7 +74,7 @@ Plataforma de monitoreo solar unificado para [Techos Rentables](https://techosre
 
 ### Trabajo con ONGs y organizaciones sociales
 
-Construyo herramientas reales para comunidades reales. Mi trabajo impulsa organizaciones sociales en toda Colombia.
+Herramientas que usan organizaciones sociales en toda Colombia:
 
 | Proyecto | Descripción | Enlace |
 |---|---|---|
@@ -103,7 +83,7 @@ Construyo herramientas reales para comunidades reales. Mi trabajo impulsa organi
 | **Decídelo - Asambleas** | Plataforma de votaciones para asambleas en todos los niveles de la organización: grupo, región y nación | [decidelo.scout.org.co](https://decidelo.scout.org.co) |
 | **[Visión Electoral](https://github.com/MiloAgudelo/vision-electoral)** | Proyecto académico de estudiantes de Ingeniería de Software. Análisis de datos de intención de voto para la segunda vuelta de las elecciones presidenciales de Colombia | [GitHub](https://github.com/MiloAgudelo/vision-electoral) |
 
-No soy solo voluntario. Construyo la infraestructura que hace funcionar a las organizaciones.
+Construyo la infraestructura que mantiene funcionando a estas organizaciones.
 
 
 ### Proyectos destacados
@@ -134,27 +114,17 @@ No soy solo voluntario. Construyo la infraestructura que hace funcionar a las or
 </div>
 
 
-### Trofeos
-
-<div align="center">
-
-[![trophy](https://github-profile-trophy.vercel.app/?username=MiloAgudelo&theme=tokyonight&no-frame=true&row=1&column=7&margin-w=8)](https://github.com/ryo-ma/github-profile-trophy)
-
-</div>
-
-
 ### Filosofía de diseño
 
 > "El buen diseño es invisible. El gran diseño se siente."
 
 Abordo cada proyecto con doble lente: diseñador e ingeniero en partes iguales. Eso significa:
 
-- Jerarquía visual que guía la mirada antes de leer una sola palabra
-- Sistemas de color que comunican antes de que el usuario procese el texto
+- Jerarquía visual y sistemas de color que guían la mirada antes de leer una palabra
 - Diseño de interacción que se siente intuitivo desde el primer uso
-- Layouts responsivos que funcionan en cualquier dispositivo, siempre
+- Layouts responsivos que funcionan en cualquier dispositivo
 
-Domino las herramientas de diseño. Prototipo antes de construir. Entrego cosas que se ven tan bien como funcionan.
+Prototipo en Figma antes de construir y entrego interfaces que se ven tan bien como funcionan.
 
 
 ### Liderazgo y comunicación
@@ -194,56 +164,38 @@ He liderado proyectos de la ideación a producción, en hackathons y en el campo
 
 Full Stack Developer and Software Engineering student from Colombia. I lead with design thinking and build with engineering precision.
 
-**TINKU Hackathon 2026 Winner.** I thrive under pressure and deliver polished, working products fast.
+**TINKU Hackathon 2026 Winner.** I deliver polished, working products under pressure.
 
-**Social impact builder.** I build digital infrastructure for social organizations, scout groups, and community-driven causes. Technology exists to serve people.
+**Social impact builder.** I build digital infrastructure for social organizations, scout groups, and community-driven causes across Colombia.
 
 **Design-native.** Strong eye for UI/UX, typography, color systems, and visual hierarchy. I care as much about how it looks as how it works.
 
 **Project leader.** I communicate clearly, align teams around a shared vision, and know when to move fast and when to slow down and think.
 
-**Performance-obsessed.** My sites load fast, always. I optimize images, lazy loading, bundle size, Core Web Vitals, and CDN caching until Lighthouse hits green. Speed isn't a bonus, it's part of the design.
+**Performance-obsessed.** I optimize images, lazy loading, bundle size, Core Web Vitals, and CDN caching until Lighthouse hits green.
 
-**AI-assisted development.** I use AI as a precision instrument. I design the architecture and make every meaningful decision. It accelerates execution. Every line has intention behind it.
+**AI-assisted development.** I use AI as a precision instrument: I design the architecture, make every meaningful decision, and delegate the repetitive execution.
 
 
-### Tech Stack
+<h3 align="center"><samp>$ ls tech-stack/</samp></h3>
 
-**Frontend**
+<p align="center"><samp>frontend/</samp></p>
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=astro,nextjs,react,ts,tailwind&theme=dark" alt="Astro, Next.js, React, TypeScript, Tailwind CSS"/>
+</p>
 
-![Astro](https://img.shields.io/badge/Astro-FF5D01?style=for-the-badge&logo=astro&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+<p align="center"><samp>backend/</samp></p>
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=nodejs,strapi,supabase,firebase,postgres,sqlite&theme=dark" alt="Node.js, Strapi, Supabase, Firebase, PostgreSQL, SQLite"/>
+</p>
 
-**Backend & Databases**
+<p align="center"><samp>design-and-cloud/</samp></p>
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=figma,vercel,cloudflare,git,github&theme=dark" alt="Figma, Vercel, Cloudflare, Git, GitHub"/>
+</p>
 
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![Strapi](https://img.shields.io/badge/Strapi-4945FF?style=for-the-badge&logo=strapi&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
-
-**Payment Gateways - Colombian market**
-
-![Bold](https://img.shields.io/badge/Bold-00B140?style=for-the-badge&logoColor=white)
-![Wompi](https://img.shields.io/badge/Wompi-7B2FBE?style=for-the-badge&logoColor=white)
-![ePayco](https://img.shields.io/badge/ePayco-003366?style=for-the-badge&logoColor=white)
-![MercadoPago](https://img.shields.io/badge/MercadoPago-009EE3?style=for-the-badge&logo=mercadopago&logoColor=white)
-
-**SEO & Visibility**
-
-![SEO](https://img.shields.io/badge/SEO-4285F4?style=for-the-badge&logo=googlesearchconsole&logoColor=white)
-![GEO](https://img.shields.io/badge/GEO_AI_Search-CC785C?style=for-the-badge&logo=anthropic&logoColor=white)
-
-**Design & Deployment**
-
-![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+<p align="center"><sub>Strongest with <b>Astro + TypeScript</b>: most of my repos live there.</sub></p>
+<p align="center"><sub>I integrate Colombian payment gateways (<b>Bold, Wompi, ePayco, MercadoPago</b>), and every site ships optimized for <b>SEO</b> and AI search (<b>GEO</b>).</sub></p>
 
 
 ### Winner - TINKU Hackathon 2026
@@ -265,7 +217,7 @@ Unified solar monitoring platform for [Techos Rentables](https://techosrentables
 
 ### NonProfit Work
 
-Building real tools for real communities. My work powers social organizations across Colombia.
+Tools in production for social organizations across Colombia:
 
 | Project | Description | Live |
 |---|---|---|
@@ -274,7 +226,7 @@ Building real tools for real communities. My work powers social organizations ac
 | **Decídelo - Assemblies** | Voting platform for Scout assemblies at every level of the organization: group, region, and nation | [decidelo.scout.org.co](https://decidelo.scout.org.co) |
 | **[Visión Electoral](https://github.com/MiloAgudelo/vision-electoral)** | Academic project by Software Engineering students. Voting intention data analysis for Colombia's presidential election runoff | [GitHub](https://github.com/MiloAgudelo/vision-electoral) |
 
-I am not just a volunteer. I build the infrastructure that makes organizations run.
+I build the infrastructure that keeps these organizations running.
 
 
 ### Featured Projects
@@ -294,21 +246,13 @@ I am not just a volunteer. I build the infrastructure that makes organizations r
 
 <div align="center">
 
-<img src="https://github-readme-stats.vercel.app/api?username=MiloAgudelo&show_icons=true&theme=tokyonight&border_color=0284c7&icon_color=38BDF8&title_color=38BDF8" width="49%" alt="GitHub Stats"/>
-<img src="https://streak-stats.demolab.com?user=MiloAgudelo&theme=tokyonight&border=0284c7&ring=38BDF8&fire=00B4FF&currStreakLabel=38BDF8" width="49%" alt="GitHub Streak"/>
+| | |
+|:---:|:---:|
+| <img src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=MiloAgudelo&theme=tokyonight" width="100%" alt="GitHub Stats"/> | <img src="https://streak-stats.demolab.com?user=MiloAgudelo&theme=tokyonight&border=0284c7&ring=38BDF8&fire=00B4FF&currStreakLabel=38BDF8" width="100%" alt="GitHub Streak"/> |
 
-<br/><br/>
-
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=MiloAgudelo&layout=compact&theme=tokyonight&border_color=0284c7&langs_count=8&title_color=38BDF8" width="50%" alt="Top Languages"/>
-
-</div>
-
-
-### Trophies
-
-<div align="center">
-
-[![trophy](https://github-profile-trophy.vercel.app/?username=MiloAgudelo&theme=tokyonight&no-frame=true&row=1&column=7&margin-w=8)](https://github.com/ryo-ma/github-profile-trophy)
+| | |
+|:---:|:---:|
+| <img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=MiloAgudelo&theme=tokyonight" width="100%" alt="Top Languages"/> | <img src="https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=MiloAgudelo&theme=tokyonight" width="100%" alt="Most Commits"/> |
 
 </div>
 
@@ -319,12 +263,11 @@ I am not just a volunteer. I build the infrastructure that makes organizations r
 
 I approach every project as both designer and engineer in equal measure. That means:
 
-- Visual hierarchy that guides the eye before a word is read
-- Color systems that communicate before the user reads a single line
+- Visual hierarchy and color systems that guide the eye before a word is read
 - Interaction design that feels intuitive from the first use
-- Responsive layouts that work on every device, every time
+- Responsive layouts that work on every device
 
-Fluent in design tools. I prototype before I build. I ship things that look as good as they work.
+I prototype in Figma before I build, and I ship interfaces that look as good as they work.
 
 
 ### Leadership and Communication
@@ -361,6 +304,6 @@ I've led projects from ideation to production, in hackathons and in the field.
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:1F4068,50:162447,100:0D1B2A&height=120&section=footer" width="100%"/>
 
-Construyendo cosas que importan, un commit a la vez. Building things that matter, one commit at a time.
+Construyo cosas que importan. · I build things that matter.
 
 </div>
