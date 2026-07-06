@@ -23,12 +23,25 @@ const SAMPLE_FRAMES = 30; // frames averaged per measurement window
 const SLOW_AVG_MS = 34; // ≈ under 30 fps sustained → one slow window
 const SLOW_WINDOWS_TO_DEGRADE = 2; // consecutive slow windows before degrading
 const WARMUP_MS = 2500; // hydration, entrance animations and image decode all jank the first seconds
+const MAX_SAMPLE_MS = 250; // clamp: one GC spike can't sink a window, yet slow frames still count
+const MAX_WINDOW_MS = 2000; // a crawling device closes windows by elapsed time, not frame count
 
 export function Bubbles() {
   const reduced = useReducedMotion() ?? false;
   const [vp, setVp] = useState({ w: 1280, h: 800 });
   const [quality, setQuality] = useState<Quality>('full');
   const perf = useRef({ last: 0, samples: 0, total: 0, slowWindows: 0, settleUntil: WARMUP_MS });
+  const skipSample = useRef(false);
+
+  /* rAF stops while the page is hidden, so the first delta after coming back
+     spans the whole time away — discard that one instead of counting it as a
+     slow frame. Everything else is clamped, not dropped, so a TV crawling at
+     a few fps (every delta huge) still accumulates samples and degrades. */
+  useEffect(() => {
+    const fn = () => { skipSample.current = true; };
+    document.addEventListener('visibilitychange', fn);
+    return () => document.removeEventListener('visibilitychange', fn);
+  }, []);
 
   useEffect(() => {
     setVp({ w: window.innerWidth, h: window.innerHeight });
@@ -167,14 +180,16 @@ export function Bubbles() {
     // position (no idle drift, mouse-follow, scroll parallax or drag spring).
     if (reduced || quality === 'frozen') return;
 
-    /* Frame-time sampling. Deltas over 250ms are tab switches, not jank. */
+    /* Frame-time sampling. */
     const p = perf.current;
     const dt = p.last ? time - p.last : 0;
     p.last = time;
-    if (time > p.settleUntil && dt > 0 && dt < 250) {
-      p.total += dt;
+    if (skipSample.current) {
+      skipSample.current = false;
+    } else if (time > p.settleUntil && dt > 0) {
+      p.total += Math.min(dt, MAX_SAMPLE_MS);
       p.samples += 1;
-      if (p.samples >= SAMPLE_FRAMES) {
+      if (p.samples >= SAMPLE_FRAMES || p.total >= MAX_WINDOW_MS) {
         const slow = p.total / p.samples > SLOW_AVG_MS;
         p.samples = 0;
         p.total = 0;
