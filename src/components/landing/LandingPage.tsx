@@ -366,10 +366,16 @@ const PHOTO_SPRING = { stiffness: 150, damping: 20, mass: 0.4 } as const;
 
 function PhotoCard({
   profileSrc,
+  profileFallbackSrc,
+  cutoutSrc,
+  cutoutFallbackSrc,
   reduced,
   caption,
 }: {
   profileSrc: string;
+  profileFallbackSrc?: string;
+  cutoutSrc: string;
+  cutoutFallbackSrc?: string;
   reduced: boolean;
   caption?: React.ReactNode;
 }) {
@@ -421,17 +427,22 @@ function PhotoCard({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Background photo — clipped to the rounded frame on every side. */}
+      {/* Background photo — clipped to the rounded frame on every side.
+          Wrapped in <picture> so browsers without WebP (TVs, older engines)
+          fall back to JPG instead of showing an empty frame. */}
       <div className="absolute inset-0 overflow-hidden rounded-[18px]">
-        <motion.img
-          src={profileSrc}
-          alt={s.photo_alt}
-          className="absolute inset-0 h-full w-full object-cover object-top"
-          style={{ x, y, scale }}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-        />
+        <picture>
+          {profileFallbackSrc && <source type="image/webp" srcSet={profileSrc} />}
+          <motion.img
+            src={profileFallbackSrc ?? profileSrc}
+            alt={s.photo_alt}
+            className="absolute inset-0 h-full w-full object-cover object-top"
+            style={{ x, y, scale }}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+          />
+        </picture>
       </div>
 
       {/* Cut-out subject on top — SAME transform as the background (locked, no
@@ -442,15 +453,18 @@ function PhotoCard({
         className="pointer-events-none absolute inset-0"
         style={{ clipPath: 'inset(-160px 0px 0px 0px round 0px 0px 18px 18px)' }}
       >
-        <motion.img
-          src={CUTOUT_SRC}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-top"
-          style={{ x, y, scale }}
-          loading="eager"
-          decoding="async"
-        />
+        <picture>
+          {cutoutFallbackSrc && <source type="image/webp" srcSet={cutoutSrc} />}
+          <motion.img
+            src={cutoutFallbackSrc ?? cutoutSrc}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-top"
+            style={{ x, y, scale }}
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
       </div>
 
       {/* Caption over the photo — mobile only. Desktop shows this line in the
@@ -474,7 +488,14 @@ function PhotoCard({
 
 /* ── Hero ────────────────────────────────────────────────────── */
 
-function Hero({ profileSrc, reduced }: { profileSrc: string; reduced: boolean }) {
+type HeroImages = {
+  profileSrc: string;
+  profileFallbackSrc?: string;
+  cutoutSrc: string;
+  cutoutFallbackSrc?: string;
+};
+
+function Hero({ images, reduced }: { images: HeroImages; reduced: boolean }) {
   const s = useS();
   const metricShine = useReadingCue(READCUE_METRIC_MS, reduced);
   return (
@@ -519,7 +540,7 @@ function Hero({ profileSrc, reduced }: { profileSrc: string; reduced: boolean })
           On mobile it carries the "Convierto ideas…" line as an overlay. */}
       <div className="flex justify-center lg:col-start-2 lg:row-start-1 lg:row-span-6 lg:justify-end lg:self-start 2xl:self-center">
         <PhotoCard
-          profileSrc={profileSrc}
+          {...images}
           reduced={reduced}
           caption={
             <>
@@ -577,7 +598,19 @@ function Hero({ profileSrc, reduced }: { profileSrc: string; reduced: boolean })
 
 /* ── Main export ─────────────────────────────────────────────── */
 
-export function LandingPage({ profileSrc = '', locale = 'es' }: { profileSrc?: string; locale?: 'es' | 'en' }) {
+export function LandingPage({
+  profileSrc = '',
+  profileFallbackSrc,
+  cutoutSrc = CUTOUT_SRC,
+  cutoutFallbackSrc,
+  locale = 'es',
+}: {
+  profileSrc?: string;
+  profileFallbackSrc?: string;
+  cutoutSrc?: string;
+  cutoutFallbackSrc?: string;
+  locale?: 'es' | 'en';
+}) {
   const reduced = useReducedMotion() ?? false;
 
   return (
@@ -588,7 +621,10 @@ export function LandingPage({ profileSrc = '', locale = 'es' }: { profileSrc?: s
 
         <div className="relative z-[2] mx-auto flex min-h-[100dvh] max-w-[1200px] flex-col px-5 sm:px-6 lg:px-8 2xl:max-w-[1440px]">
           <Navbar reduced={reduced} />
-          <Hero profileSrc={profileSrc} reduced={reduced} />
+          <Hero
+            images={{ profileSrc, profileFallbackSrc, cutoutSrc, cutoutFallbackSrc }}
+            reduced={reduced}
+          />
         </div>
       </div>
     </LocaleCtx.Provider>

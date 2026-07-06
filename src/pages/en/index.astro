@@ -3,8 +3,13 @@ import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { LandingPage } from '@/components/landing/LandingPage';
 import profilePictureLight from '../../assets/profile-picture-light.jpg';
+import profileCutout from '../../assets/profile-cutout.webp';
 
 const profilePic = await getImage({ src: profilePictureLight, format: 'webp', quality: 85 });
+// JPG/PNG fallbacks: some browsers (TVs, consoles, older engines) lack WebP support.
+const profilePicJpg = await getImage({ src: profilePictureLight, format: 'jpeg', quality: 82 });
+const cutoutWebp = await getImage({ src: profileCutout, format: 'webp' });
+const cutoutPng = await getImage({ src: profileCutout, format: 'png' });
 
 const personSchema = {
   '@context': 'https://schema.org',
@@ -25,5 +30,12 @@ const personSchema = {
   ogImage={profilePic.src}
 >
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(personSchema)} />
-  <LandingPage client:load profileSrc={profilePic.src} locale="en" />
+  <LandingPage
+    client:load
+    profileSrc={profilePic.src}
+    profileFallbackSrc={profilePicJpg.src}
+    cutoutSrc={cutoutWebp.src}
+    cutoutFallbackSrc={cutoutPng.src}
+    locale="en"
+  />
 </BaseLayout>
