@@ -24,13 +24,13 @@ const SLOW_AVG_MS = 34; // ≈ under 30 fps sustained → one slow window
 const SLOW_WINDOWS_TO_DEGRADE = 2; // consecutive slow windows before degrading
 const WARMUP_MS = 2500; // hydration, entrance animations and image decode all jank the first seconds
 const MAX_SAMPLE_MS = 250; // clamp: one GC spike can't sink a window, yet slow frames still count
-const MAX_WINDOW_MS = 2000; // a crawling device closes windows by elapsed time, not frame count
+const MAX_WINDOW_MS = 2000; // a crawling device closes windows by real elapsed time, not frame count
 
 export function Bubbles() {
   const reduced = useReducedMotion() ?? false;
   const [vp, setVp] = useState({ w: 1280, h: 800 });
   const [quality, setQuality] = useState<Quality>('full');
-  const perf = useRef({ last: 0, samples: 0, total: 0, slowWindows: 0, settleUntil: WARMUP_MS });
+  const perf = useRef({ last: 0, samples: 0, total: 0, elapsed: 0, slowWindows: 0, settleUntil: WARMUP_MS });
   const skipSample = useRef(false);
 
   /* rAF stops while the page is hidden, so the first delta after coming back
@@ -187,12 +187,17 @@ export function Bubbles() {
     if (skipSample.current) {
       skipSample.current = false;
     } else if (time > p.settleUntil && dt > 0) {
+      // `total` uses the clamped delta so one GC spike can't sink the average;
+      // `elapsed` uses the real delta so the window boundary tracks wall-clock
+      // time — a device at a few fps closes a window in ~2s, not in 8 frames.
       p.total += Math.min(dt, MAX_SAMPLE_MS);
+      p.elapsed += dt;
       p.samples += 1;
-      if (p.samples >= SAMPLE_FRAMES || p.total >= MAX_WINDOW_MS) {
+      if (p.samples >= SAMPLE_FRAMES || p.elapsed >= MAX_WINDOW_MS) {
         const slow = p.total / p.samples > SLOW_AVG_MS;
         p.samples = 0;
         p.total = 0;
+        p.elapsed = 0;
         p.slowWindows = slow ? p.slowWindows + 1 : 0;
         if (p.slowWindows >= SLOW_WINDOWS_TO_DEGRADE) {
           p.slowWindows = 0;
