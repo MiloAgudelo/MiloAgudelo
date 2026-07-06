@@ -1,6 +1,11 @@
-/* Scattered icon pattern — top-left and bottom-right corners only */
+/* Scattered icon pattern — top-left and bottom-right corners only.
+   Icons are laid out as a right triangle with the right angle in the
+   corner (legs along the screen edges, hypotenuse running diagonally).
+   The fade toward the hypotenuse is done with a single mask-image
+   gradient PER CLUSTER — not per icon — so the triangle's edge softly
+   loses opacity as a whole. */
 
-type IconDef = { d: string | string[]; x: number; y: number; rot: number; size?: number; op?: number };
+type IconDef = { d: string | string[]; x: number; y: number; rot: number; size?: number };
 
 const P = {
   camera: [
@@ -34,42 +39,57 @@ const P = {
   ],
 };
 
-/* ── Top-left cluster ────────────────────────────────────────── */
+/* ── Top-left cluster — right angle at the top-left corner.
+   Rows get shorter going down (6→5→4→3→2→1), so the icons fill a
+   triangle whose hypotenuse runs from the top-right down to the left. ── */
 const TOP_LEFT: IconDef[] = [
-  { d: P.camera,   x:  12, y:  10, rot: -8,  size: 18 },
-  { d: P.code,     x:  65, y:   8, rot:  5,  size: 18 },
-  { d: P.tent,     x: 130, y:  14, rot: -4,  size: 20 },
-  { d: P.pen,      x: 185, y:   6, rot: 10,  size: 16 },
-  { d: P.mountain, x:  30, y:  58, rot:  6,  size: 20 },
-  { d: P.aperture, x:  95, y:  55, rot: -7,  size: 18 },
-  { d: P.laptop,   x: 155, y:  60, rot:  4,  size: 20 },
-  { d: P.layers,   x: 210, y:  52, rot: -5,  size: 18 },
-  { d: P.mappin,   x:   8, y: 108, rot: 12,  size: 16 },
-  { d: P.compass,  x:  68, y: 110, rot: -3,  size: 18 },
-  { d: P.camera,   x: 130, y: 105, rot:  7,  size: 18, op: 0.06 },
-  { d: P.code,     x: 192, y: 112, rot: -9,  size: 18 },
-  { d: P.tent,     x:  35, y: 158, rot: -6,  size: 20, op: 0.06 },
-  { d: P.pen,      x: 100, y: 162, rot:  8,  size: 16 },
-  { d: P.mountain, x: 158, y: 155, rot: -4,  size: 20 },
+  { d: P.camera,   x:  14, y:   8, rot: -8, size: 18 },
+  { d: P.code,     x:  70, y:   4, rot:  6, size: 18 },
+  { d: P.tent,     x: 128, y:  10, rot: -4, size: 20 },
+  { d: P.pen,      x: 186, y:   3, rot: 10, size: 16 },
+  { d: P.aperture, x: 242, y:   9, rot: -6, size: 18 },
+  { d: P.layers,   x: 296, y:   5, rot:  4, size: 18 },
+  { d: P.mountain, x:  10, y:  56, rot:  6, size: 20 },
+  { d: P.laptop,   x:  66, y:  52, rot: -5, size: 20 },
+  { d: P.compass,  x: 124, y:  58, rot:  7, size: 18 },
+  { d: P.mappin,   x: 182, y:  54, rot: -8, size: 16 },
+  { d: P.code,     x: 240, y:  60, rot:  5, size: 18 },
+  { d: P.pen,      x:   8, y: 104, rot: 11, size: 16 },
+  { d: P.tent,     x:  64, y: 108, rot: -6, size: 20 },
+  { d: P.camera,   x: 122, y: 102, rot:  7, size: 18 },
+  { d: P.aperture, x: 180, y: 110, rot: -9, size: 18 },
+  { d: P.layers,   x:  12, y: 152, rot: -5, size: 18 },
+  { d: P.mountain, x:  68, y: 156, rot:  8, size: 20 },
+  { d: P.compass,  x: 126, y: 150, rot: -3, size: 18 },
+  { d: P.laptop,   x:  10, y: 200, rot:  4, size: 20 },
+  { d: P.code,     x:  66, y: 204, rot: -7, size: 18 },
+  { d: P.mappin,   x:  14, y: 248, rot: 10, size: 16 },
 ];
 
-/* ── Bottom-right cluster (offsets from bottom-right, will be flipped via CSS) ── */
+/* ── Bottom-right cluster — right angle at the bottom-right corner
+   (offsets are from bottom-right). Mirror of the top-left triangle. ── */
 const BOTTOM_RIGHT: IconDef[] = [
-  { d: P.layers,   x:  14, y:  12, rot:  7,  size: 18 },
-  { d: P.aperture, x:  68, y:   8, rot: -5,  size: 18 },
-  { d: P.laptop,   x: 128, y:  14, rot:  9,  size: 20 },
-  { d: P.mappin,   x: 186, y:   5, rot: -8,  size: 16 },
-  { d: P.code,     x:  30, y:  58, rot: -4,  size: 18 },
-  { d: P.compass,  x:  90, y:  55, rot:  6,  size: 18 },
-  { d: P.camera,   x: 150, y:  60, rot: -7,  size: 18 },
-  { d: P.tent,     x: 208, y:  52, rot:  4,  size: 20 },
-  { d: P.pen,      x:  10, y: 108, rot: 11,  size: 16 },
-  { d: P.mountain, x:  68, y: 110, rot: -5,  size: 20 },
-  { d: P.layers,   x: 128, y: 105, rot:  3,  size: 18, op: 0.06 },
-  { d: P.aperture, x: 188, y: 112, rot: -10, size: 18 },
-  { d: P.camera,   x:  38, y: 158, rot:  7,  size: 18, op: 0.06 },
-  { d: P.code,     x:  98, y: 162, rot: -4,  size: 18 },
-  { d: P.tent,     x: 158, y: 155, rot:  8,  size: 20 },
+  { d: P.layers,   x:  14, y:   8, rot:  7, size: 18 },
+  { d: P.aperture, x:  70, y:   4, rot: -5, size: 18 },
+  { d: P.laptop,   x: 128, y:  10, rot:  9, size: 20 },
+  { d: P.mappin,   x: 186, y:   3, rot: -8, size: 16 },
+  { d: P.code,     x: 242, y:   9, rot:  4, size: 18 },
+  { d: P.camera,   x: 296, y:   5, rot: -6, size: 18 },
+  { d: P.compass,  x:  10, y:  56, rot: -4, size: 18 },
+  { d: P.tent,     x:  66, y:  52, rot:  6, size: 20 },
+  { d: P.pen,      x: 124, y:  58, rot: -7, size: 16 },
+  { d: P.mountain, x: 182, y:  54, rot:  5, size: 20 },
+  { d: P.layers,   x: 240, y:  60, rot: -5, size: 18 },
+  { d: P.camera,   x:   8, y: 104, rot:  7, size: 18 },
+  { d: P.code,     x:  64, y: 108, rot: -4, size: 18 },
+  { d: P.aperture, x: 122, y: 102, rot:  8, size: 18 },
+  { d: P.laptop,   x: 180, y: 110, rot: -6, size: 20 },
+  { d: P.tent,     x:  12, y: 152, rot:  8, size: 20 },
+  { d: P.pen,      x:  68, y: 156, rot: -5, size: 16 },
+  { d: P.mountain, x: 126, y: 150, rot:  4, size: 20 },
+  { d: P.compass,  x:  10, y: 200, rot: -7, size: 18 },
+  { d: P.mappin,   x:  66, y: 204, rot:  9, size: 16 },
+  { d: P.camera,   x:  14, y: 248, rot: -4, size: 18 },
 ];
 
 function Icon({ d, size = 18 }: { d: string | string[]; size?: number }) {
@@ -82,24 +102,55 @@ function Icon({ d, size = 18 }: { d: string | string[]; size?: number }) {
   );
 }
 
+/* Triangle bounding box + the diagonal fade mask (one per cluster). The
+   gradient's iso-lines run parallel to the hypotenuse, so opacity is full
+   at the corner and fades out toward — and past — the triangle's edge. */
+const CLUSTER_W = 330;
+const CLUSTER_H = 290;
+const BASE_OPACITY = 0.1;
+const MASK_TL = 'linear-gradient(to bottom right, #000 0%, #000 28%, transparent 82%)';
+const MASK_BR = 'linear-gradient(to top left, #000 0%, #000 28%, transparent 82%)';
+
 export function PagePattern() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ zIndex: 0 }} aria-hidden="true">
-      {/* Top-left */}
-      {TOP_LEFT.map((ic, i) => (
-        <div key={`tl-${i}`} className="absolute text-foreground"
-          style={{ left: ic.x, top: ic.y, transform: `rotate(${ic.rot}deg)`, opacity: ic.op ?? 0.08 }}>
-          <Icon d={ic.d} size={ic.size} />
-        </div>
-      ))}
+      {/* Top-left triangle */}
+      <div
+        className="absolute left-0 top-0 text-foreground"
+        style={{
+          width: CLUSTER_W,
+          height: CLUSTER_H,
+          opacity: BASE_OPACITY,
+          WebkitMaskImage: MASK_TL,
+          maskImage: MASK_TL,
+        }}
+      >
+        {TOP_LEFT.map((ic, i) => (
+          <div key={`tl-${i}`} className="absolute"
+            style={{ left: ic.x, top: ic.y, transform: `rotate(${ic.rot}deg)` }}>
+            <Icon d={ic.d} size={ic.size} />
+          </div>
+        ))}
+      </div>
 
-      {/* Bottom-right */}
-      {BOTTOM_RIGHT.map((ic, i) => (
-        <div key={`br-${i}`} className="absolute text-foreground"
-          style={{ right: ic.x, bottom: ic.y, transform: `rotate(${ic.rot}deg)`, opacity: ic.op ?? 0.08 }}>
-          <Icon d={ic.d} size={ic.size} />
-        </div>
-      ))}
+      {/* Bottom-right triangle */}
+      <div
+        className="absolute bottom-0 right-0 text-foreground"
+        style={{
+          width: CLUSTER_W,
+          height: CLUSTER_H,
+          opacity: BASE_OPACITY,
+          WebkitMaskImage: MASK_BR,
+          maskImage: MASK_BR,
+        }}
+      >
+        {BOTTOM_RIGHT.map((ic, i) => (
+          <div key={`br-${i}`} className="absolute"
+            style={{ right: ic.x, bottom: ic.y, transform: `rotate(${ic.rot}deg)` }}>
+            <Icon d={ic.d} size={ic.size} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

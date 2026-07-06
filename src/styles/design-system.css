@@ -239,4 +239,19 @@
     0 0 0 3px rgba(0,64,255,0.10);
 }
 
+/* ── Reading-cue shine (mobile onboarding) ──
+   A one-shot, subtle glow that guides the eye down the page after the
+   navbar greeting types out: first the metric, then the hero statement.
+   Non-destructive (only text-shadow + brightness, reverts on its own).
+   Glow colour is per-element via --readcue-glow. */
+@keyframes readcue-shine {
+  0%   { text-shadow: 0 0 0 transparent; filter: brightness(1); }
+  45%  { text-shadow: 0 0 10px var(--readcue-glow, rgba(0,64,255,0.30)); filter: brightness(1.09); }
+  100% { text-shadow: 0 0 0 transparent; filter: brightness(1); }
+}
+.readcue-shine { animation: readcue-shine 1.5s ease-in-out; }
+@media (prefers-reduced-motion: reduce) {
+  .readcue-shine { animation: none; }
+}
+
 
