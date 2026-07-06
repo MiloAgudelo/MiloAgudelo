@@ -14,9 +14,34 @@ const DEFS = [
 
 type Refs<T> = React.MutableRefObject<(T | null)[]>;
 
+/* Adaptive quality — weak GPUs (smart TVs, old laptops) can't repaint the
+   glass SVG filter + blend mode every frame. We measure real frame times and
+   degrade one step at a time: 'full' (filter + caustics) → 'lite' (plain
+   gradients, still animated) → 'frozen' (static at base position). */
+type Quality = 'full' | 'lite' | 'frozen';
+const SAMPLE_FRAMES = 30; // frames averaged per measurement window
+const SLOW_AVG_MS = 34; // ≈ under 30 fps sustained → one slow window
+const SLOW_WINDOWS_TO_DEGRADE = 2; // consecutive slow windows before degrading
+const WARMUP_MS = 2500; // hydration, entrance animations and image decode all jank the first seconds
+const MAX_SAMPLE_MS = 250; // clamp: one GC spike can't sink a window, yet slow frames still count
+const MAX_WINDOW_MS = 2000; // a crawling device closes windows by real elapsed time, not frame count
+
 export function Bubbles() {
   const reduced = useReducedMotion() ?? false;
   const [vp, setVp] = useState({ w: 1280, h: 800 });
+  const [quality, setQuality] = useState<Quality>('full');
+  const perf = useRef({ last: 0, samples: 0, total: 0, elapsed: 0, slowWindows: 0, settleUntil: WARMUP_MS });
+  const skipSample = useRef(false);
+
+  /* rAF stops while the page is hidden, so the first delta after coming back
+     spans the whole time away — discard that one instead of counting it as a
+     slow frame. Everything else is clamped, not dropped, so a TV crawling at
+     a few fps (every delta huge) still accumulates samples and degrades. */
+  useEffect(() => {
+    const fn = () => { skipSample.current = true; };
+    document.addEventListener('visibilitychange', fn);
+    return () => document.removeEventListener('visibilitychange', fn);
+  }, []);
 
   useEffect(() => {
     setVp({ w: window.innerWidth, h: window.innerHeight });
@@ -153,7 +178,35 @@ export function Bubbles() {
   useAnimationFrame((time) => {
     // Respect prefers-reduced-motion: leave bubbles static at their base
     // position (no idle drift, mouse-follow, scroll parallax or drag spring).
-    if (reduced) return;
+    if (reduced || quality === 'frozen') return;
+
+    /* Frame-time sampling. */
+    const p = perf.current;
+    const dt = p.last ? time - p.last : 0;
+    p.last = time;
+    if (skipSample.current) {
+      skipSample.current = false;
+    } else if (time > p.settleUntil && dt > 0) {
+      // `total` uses the clamped delta so one GC spike can't sink the average;
+      // `elapsed` uses the real delta so the window boundary tracks wall-clock
+      // time — a device at a few fps closes a window in ~2s, not in 8 frames.
+      p.total += Math.min(dt, MAX_SAMPLE_MS);
+      p.elapsed += dt;
+      p.samples += 1;
+      if (p.samples >= SAMPLE_FRAMES || p.elapsed >= MAX_WINDOW_MS) {
+        const slow = p.total / p.samples > SLOW_AVG_MS;
+        p.samples = 0;
+        p.total = 0;
+        p.elapsed = 0;
+        p.slowWindows = slow ? p.slowWindows + 1 : 0;
+        if (p.slowWindows >= SLOW_WINDOWS_TO_DEGRADE) {
+          p.slowWindows = 0;
+          p.settleUntil = time + 1000; // let the cheaper render settle before re-measuring
+          setQuality(q => (q === 'full' ? 'lite' : 'frozen'));
+        }
+      }
+    }
+
     DEFS.forEach((d, i) => {
       const circle  = circleRefs.current[i];
       const caustic = causticRefs.current[i];
@@ -233,7 +286,9 @@ export function Bubbles() {
           </linearGradient>
         </defs>
 
-        <g filter="url(#glass-deform)">
+        {/* The deform filter and blended caustics repaint on every frame the
+            bubbles move — too heavy for weak GPUs, so 'lite' drops them. */}
+        <g filter={quality === 'full' ? 'url(#glass-deform)' : undefined}>
           {DEFS.map((d, i) => (
             <circle key={i} ref={el => { circleRefs.current[i] = el; }}
               cx={d.bx(vp.w)} cy={d.by(vp.h)} r={d.r}
@@ -242,14 +297,16 @@ export function Bubbles() {
           ))}
         </g>
 
-        <g style={{ mixBlendMode: 'screen' }}>
-          {DEFS.map((d, i) => (
-            <circle key={i} ref={el => { causticRefs.current[i] = el; }}
-              cx={d.bx(vp.w)} cy={d.by(vp.h)} r={d.r}
-              fill="url(#glass-caustic)"
-            />
-          ))}
-        </g>
+        {quality === 'full' && (
+          <g style={{ mixBlendMode: 'screen' }}>
+            {DEFS.map((d, i) => (
+              <circle key={i} ref={el => { causticRefs.current[i] = el; }}
+                cx={d.bx(vp.w)} cy={d.by(vp.h)} r={d.r}
+                fill="url(#glass-caustic)"
+              />
+            ))}
+          </g>
+        )}
 
         {DEFS.map((d, i) => (
           <ellipse key={i} ref={el => { glossRefs.current[i] = el; }}
