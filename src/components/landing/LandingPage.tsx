@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, useReducedMotion } from 'motion/react';
+import { getCalApi } from '@calcom/embed-react';
 import { Bubbles } from '@/components/design-system/Bubbles';
 import { PagePattern } from '@/components/design-system/PagePattern';
 import '@/styles/design-system.css';
@@ -20,6 +21,21 @@ import {
   Layout01Icon,
 } from '@hugeicons/core-free-icons';
 
+/* ── Cal.com booking ─────────────────────────────────────────────
+   Both "book a call" CTAs open the Cal.com modal via the embed API. The
+   link is localized per language (s.cal_link): the Spanish site points to
+   the Spanish event type, the English site to the English one, so each
+   visitor books in their own language.
+
+   getCalApi() creates the window.Cal queue and injects embed.js; the
+   resolved `cal` queues commands until the script loads, so calling it is
+   safe even while embed.js is still downloading. We stash it here so the
+   CTA handler (deep in the tree) can reach it. Until it resolves — or with
+   JS disabled — the click falls through to the real href (the Cal page),
+   which also covers crawlers. */
+
+let calApi: Awaited<ReturnType<typeof getCalApi>> | null = null;
+
 /* ── i18n ────────────────────────────────────────────────────── */
 
 const STRINGS = {
@@ -30,6 +46,7 @@ const STRINGS = {
     nav_contact: 'Contacto',
     book_call: 'Agenda una llamada',
     book_call_short: 'Agendar',
+    cal_link: 'miloagudelo/descubrimiento',
     metric: '+10 empresas como la tuya confían en mi trabajo',
     h1_line1: 'Hola, soy Milo.',
     h1_line2_accent: 'Convierto ideas',
@@ -47,6 +64,7 @@ const STRINGS = {
     nav_contact: 'Contact',
     book_call: 'Book a call',
     book_call_short: 'Book',
+    cal_link: 'miloagudelo/discovery-call',
     metric: '10+ companies like yours trust my work',
     h1_line1: "Hey, I'm Milo.",
     h1_line2_accent: 'I turn ideas',
@@ -109,12 +127,14 @@ function MagneticLink({
   contentClassName,
   reduced,
   children,
+  calLink,
 }: {
   href: string;
   className?: string;
   contentClassName?: string;
   reduced: boolean;
   children: React.ReactNode;
+  calLink?: string;
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
   // Normalised pointer offset within the halo, −1..1 on each axis
@@ -153,6 +173,15 @@ function MagneticLink({
     <motion.a
       ref={ref}
       href={href}
+      // Open the Cal.com modal once the embed API is ready. Until it resolves
+      // (or with JS off) we do NOT preventDefault, so the click falls through
+      // to the real href instead of dying. Calling calApi() is safe even while
+      // embed.js is still loading — the command queues and fires when ready.
+      onClick={calLink ? (e) => {
+        if (!calApi) return;
+        e.preventDefault();
+        calApi('modal', { calLink });
+      } : undefined}
       className={className}
       style={{ x: pillX, y: pillY }}
       whileTap={reduced ? {} : { scale: 0.97 }}
@@ -320,7 +349,8 @@ function Navbar({ reduced }: { reduced: boolean }) {
       </nav>
 
       <MagneticLink
-        href="#"
+        href={`https://cal.com/${s.cal_link}`}
+        calLink={s.cal_link}
         reduced={reduced}
         className="btn-glass-primary flex h-10 items-center rounded-full px-4 font-sans text-sm font-bold text-foreground xl:h-11 xl:px-5 xl:text-[15px]"
         contentClassName="flex items-center gap-2"
@@ -530,7 +560,7 @@ function Hero({ images, reduced }: { images: HeroImages; reduced: boolean }) {
         <motion.p
           {...enter(reduced, 0.18)}
           style={{ ['--readcue-glow' as never]: 'rgba(0,64,255,0.34)' }}
-          className={`mt-2.5 text-[9px] font-medium uppercase tracking-[0.1em] text-muted-foreground md:mt-3 md:text-[10px] lg:hidden${metricShine ? ' readcue-shine' : ''}`}
+          className={`mt-2.5 text-[9px] font-medium uppercase tracking-[0.1em] text-muted-foreground md:mt-3 md:text-[10px] lg:hidden ${metricShine ? 'readcue-shine' : ''}`}
         >
           {s.metric}
         </motion.p>
@@ -564,7 +594,8 @@ function Hero({ images, reduced }: { images: HeroImages; reduced: boolean }) {
         className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center md:justify-center lg:col-start-1 lg:row-start-4 lg:justify-start"
       >
         <MagneticLink
-          href="#"
+          href={`https://cal.com/${s.cal_link}`}
+          calLink={s.cal_link}
           reduced={reduced}
           className="btn-glass-primary group/btn flex h-12 w-full items-center justify-center rounded-full px-6 font-sans text-sm font-bold text-foreground sm:w-auto xl:h-[52px] xl:px-7 xl:text-[15px]"
           contentClassName="flex items-center gap-2.5"
@@ -612,6 +643,23 @@ export function LandingPage({
   locale?: 'es' | 'en';
 }) {
   const reduced = useReducedMotion() ?? false;
+
+  // Load the Cal.com embed, theme its modal to the brand color, and preload
+  // this locale's booking page so the modal opens instantly on click.
+  useEffect(() => {
+    getCalApi().then(cal => {
+      calApi = cal;
+      cal('ui', {
+        cssVarsPerTheme: {
+          light: { 'cal-brand': '#0040ff' },
+          dark: { 'cal-brand': '#0040ff' },
+        },
+        hideEventTypeDetails: false,
+        layout: 'month_view',
+      });
+      cal('preload', { calLink: STRINGS[locale].cal_link });
+    });
+  }, [locale]);
 
   return (
     <LocaleCtx.Provider value={STRINGS[locale]}>
