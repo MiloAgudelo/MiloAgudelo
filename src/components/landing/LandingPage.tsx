@@ -22,11 +22,19 @@ import {
 } from '@hugeicons/core-free-icons';
 
 /* ── Cal.com booking ─────────────────────────────────────────────
-   Both "book a call" CTAs open the Cal.com modal (embed.js listens for
-   clicks on [data-cal-link] at the document level). The link is localized
-   per language (s.cal_link): the Spanish site points to the Spanish event
-   type, the English site to the English one, so each visitor books in their
-   own language. The href mirrors it as a real fallback for no-JS / crawlers. */
+   Both "book a call" CTAs open the Cal.com modal via the embed API. The
+   link is localized per language (s.cal_link): the Spanish site points to
+   the Spanish event type, the English site to the English one, so each
+   visitor books in their own language.
+
+   getCalApi() creates the window.Cal queue and injects embed.js; the
+   resolved `cal` queues commands until the script loads, so calling it is
+   safe even while embed.js is still downloading. We stash it here so the
+   CTA handler (deep in the tree) can reach it. Until it resolves — or with
+   JS disabled — the click falls through to the real href (the Cal page),
+   which also covers crawlers. */
+
+let calApi: Awaited<ReturnType<typeof getCalApi>> | null = null;
 
 /* ── i18n ────────────────────────────────────────────────────── */
 
@@ -165,11 +173,15 @@ function MagneticLink({
     <motion.a
       ref={ref}
       href={href}
-      data-cal-link={calLink}
-      // embed.js opens the modal from a document-level click listener without
-      // preventing default, so stop the href navigation ourselves once the
-      // embed queue (window.Cal) exists; without JS the href still works.
-      onClick={calLink ? e => { if ('Cal' in window) e.preventDefault(); } : undefined}
+      // Open the Cal.com modal once the embed API is ready. Until it resolves
+      // (or with JS off) we do NOT preventDefault, so the click falls through
+      // to the real href instead of dying. Calling calApi() is safe even while
+      // embed.js is still loading — the command queues and fires when ready.
+      onClick={calLink ? (e) => {
+        if (!calApi) return;
+        e.preventDefault();
+        calApi('modal', { calLink });
+      } : undefined}
       className={className}
       style={{ x: pillX, y: pillY }}
       whileTap={reduced ? {} : { scale: 0.97 }}
@@ -632,9 +644,11 @@ export function LandingPage({
 }) {
   const reduced = useReducedMotion() ?? false;
 
-  // Load the Cal.com embed and match its modal to the site's brand color.
+  // Load the Cal.com embed, theme its modal to the brand color, and preload
+  // this locale's booking page so the modal opens instantly on click.
   useEffect(() => {
     getCalApi().then(cal => {
+      calApi = cal;
       cal('ui', {
         cssVarsPerTheme: {
           light: { 'cal-brand': '#0040ff' },
@@ -643,8 +657,9 @@ export function LandingPage({
         hideEventTypeDetails: false,
         layout: 'month_view',
       });
+      cal('preload', { calLink: STRINGS[locale].cal_link });
     });
-  }, []);
+  }, [locale]);
 
   return (
     <LocaleCtx.Provider value={STRINGS[locale]}>
