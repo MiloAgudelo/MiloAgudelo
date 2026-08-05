@@ -1,0 +1,4 @@
+# pnpm 10 lee los settings desde aquí, ya no desde el campo "pnpm" de package.json.
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
