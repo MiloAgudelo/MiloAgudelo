@@ -195,11 +195,13 @@ function MagneticLink({
 
 /* ── Navbar ──────────────────────────────────────────────────── */
 
+/* Flip `ready` to true when that section lands. One flag per section so
+   each can ship independently without resurrecting dead anchors. */
 const NAV_LINKS = [
-  { id: 'work',    key: 'nav_work' },
-  { id: 'about',   key: 'nav_about' },
-  { id: 'stack',   key: 'nav_stack' },
-  { id: 'contact', key: 'nav_contact' },
+  { id: 'work',    key: 'nav_work',    ready: false },
+  { id: 'about',   key: 'nav_about',   ready: false },
+  { id: 'stack',   key: 'nav_stack',   ready: false },
+  { id: 'contact', key: 'nav_contact', ready: false },
 ] as const;
 
 /* ── Mobile-only navbar intro ─────────────────────────────────────
@@ -336,17 +338,19 @@ function Navbar({ reduced }: { reduced: boolean }) {
         </span>
       </a>
 
-      <nav aria-label="Principal" className="hidden items-center gap-1 md:flex">
-        {NAV_LINKS.map(link => (
-          <a
-            key={link.id}
-            href={`#${link.id}`}
-            className="rounded-full px-4 py-2 text-sm font-semibold text-foreground/55 transition-colors duration-150 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary xl:px-5 xl:text-[15px]"
-          >
-            {s[link.key]}
-          </a>
-        ))}
-      </nav>
+      {NAV_LINKS.some(link => link.ready) && (
+        <nav aria-label="Principal" className="hidden items-center gap-1 md:flex">
+          {NAV_LINKS.filter(link => link.ready).map(link => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              className="rounded-full px-4 py-2 text-sm font-semibold text-foreground/55 transition-colors duration-150 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary xl:px-5 xl:text-[15px]"
+            >
+              {s[link.key]}
+            </a>
+          ))}
+        </nav>
+      )}
 
       <MagneticLink
         href={`https://cal.com/${s.cal_link}`}
@@ -606,15 +610,17 @@ function Hero({ images, reduced }: { images: HeroImages; reduced: boolean }) {
             <HugeiconsIcon icon={ArrowRight01Icon} size={15} aria-hidden="true" />
           </span>
         </MagneticLink>
-        <MagneticLink
-          href="#work"
-          reduced={reduced}
-          className="btn-glass-secondary flex h-12 w-full items-center justify-center rounded-full px-6 font-sans text-sm font-bold text-foreground sm:w-auto xl:h-[52px] xl:px-7 xl:text-[15px]"
-          contentClassName="flex items-center gap-2.5"
-        >
-          <HugeiconsIcon icon={FolderOpenIcon} size={16} strokeWidth={1.5} aria-hidden="true" />
-          {s.see_projects}
-        </MagneticLink>
+        {NAV_LINKS.find(link => link.id === 'work')?.ready && (
+          <MagneticLink
+            href="#work"
+            reduced={reduced}
+            className="btn-glass-secondary flex h-12 w-full items-center justify-center rounded-full px-6 font-sans text-sm font-bold text-foreground sm:w-auto xl:h-[52px] xl:px-7 xl:text-[15px]"
+            contentClassName="flex items-center gap-2.5"
+          >
+            <HugeiconsIcon icon={FolderOpenIcon} size={16} strokeWidth={1.5} aria-hidden="true" />
+            {s.see_projects}
+          </MagneticLink>
+        )}
       </motion.div>
 
       <motion.div
