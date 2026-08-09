@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, useSpring, useReducedMotion } fro
 import { getCalApi } from '@calcom/embed-react';
 import { Bubbles } from '@/components/design-system/Bubbles';
 import { PagePattern } from '@/components/design-system/PagePattern';
+import { STRINGS, type Strings } from '@/i18n/strings';
 import '@/styles/design-system.css';
 
 import logoMark from '@/assets/avatar-mark.svg';
@@ -38,46 +39,6 @@ let calApi: Awaited<ReturnType<typeof getCalApi>> | null = null;
 
 /* ── i18n ────────────────────────────────────────────────────── */
 
-const STRINGS = {
-  es: {
-    nav_work: 'Trabajo',
-    nav_about: 'Sobre mí',
-    nav_stack: 'Stack',
-    nav_contact: 'Contacto',
-    book_call: 'Agenda una llamada',
-    book_call_short: 'Agendar',
-    cal_link: 'miloagudelo/descubrimiento',
-    metric: '+10 empresas como la tuya confían en mi trabajo',
-    h1_line1: 'Hola, soy Milo.',
-    h1_line2_accent: 'Convierto ideas',
-    h1_line2_tail: 'en productos que funcionan.',
-    sub: 'Diseño y construyo sitios web, tiendas online y software a la medida. De principio a fin, cuidando los detalles.',
-    see_projects: 'Ver proyectos',
-    signal_location: 'Colombia · GMT-5',
-    signal_stack: 'Landing Pages · E-commerce · Software a la medida',
-    photo_alt: 'Milo Agudelo, desarrollador full stack',
-  },
-  en: {
-    nav_work: 'Work',
-    nav_about: 'About',
-    nav_stack: 'Stack',
-    nav_contact: 'Contact',
-    book_call: 'Book a call',
-    book_call_short: 'Book',
-    cal_link: 'miloagudelo/discovery-call',
-    metric: '10+ companies like yours trust my work',
-    h1_line1: "Hey, I'm Milo.",
-    h1_line2_accent: 'I turn ideas',
-    h1_line2_tail: 'into products that work.',
-    sub: 'I design and build websites, online stores and custom software. End to end, minding every detail.',
-    see_projects: 'See projects',
-    signal_location: 'Colombia · GMT-5',
-    signal_stack: 'Landing pages · E-commerce · Custom software',
-    photo_alt: 'Milo Agudelo, full stack developer',
-  },
-} as const;
-
-type Strings = typeof STRINGS.es;
 const LocaleCtx = createContext<Strings>(STRINGS.es);
 const useS = () => useContext(LocaleCtx);
 
