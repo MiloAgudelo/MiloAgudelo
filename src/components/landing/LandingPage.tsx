@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, useSpring, useReducedMotion } fro
 import { getCalApi } from '@calcom/embed-react';
 import { Bubbles } from '@/components/design-system/Bubbles';
 import { PagePattern } from '@/components/design-system/PagePattern';
+import { STRINGS, type Strings } from '@/i18n/strings';
 import '@/styles/design-system.css';
 
 import logoMark from '@/assets/avatar-mark.svg';
@@ -38,46 +39,6 @@ let calApi: Awaited<ReturnType<typeof getCalApi>> | null = null;
 
 /* ── i18n ────────────────────────────────────────────────────── */
 
-const STRINGS = {
-  es: {
-    nav_work: 'Trabajo',
-    nav_about: 'Sobre mí',
-    nav_stack: 'Stack',
-    nav_contact: 'Contacto',
-    book_call: 'Agenda una llamada',
-    book_call_short: 'Agendar',
-    cal_link: 'miloagudelo/descubrimiento',
-    metric: '+10 empresas como la tuya confían en mi trabajo',
-    h1_line1: 'Hola, soy Milo.',
-    h1_line2_accent: 'Convierto ideas',
-    h1_line2_tail: 'en productos que funcionan.',
-    sub: 'Diseño y construyo sitios web, tiendas online y software a la medida. De principio a fin, cuidando los detalles.',
-    see_projects: 'Ver proyectos',
-    signal_location: 'Colombia · GMT-5',
-    signal_stack: 'Landing Pages · E-commerce · Software a la medida',
-    photo_alt: 'Milo Agudelo, desarrollador full stack',
-  },
-  en: {
-    nav_work: 'Work',
-    nav_about: 'About',
-    nav_stack: 'Stack',
-    nav_contact: 'Contact',
-    book_call: 'Book a call',
-    book_call_short: 'Book',
-    cal_link: 'miloagudelo/discovery-call',
-    metric: '10+ companies like yours trust my work',
-    h1_line1: "Hey, I'm Milo.",
-    h1_line2_accent: 'I turn ideas',
-    h1_line2_tail: 'into products that work.',
-    sub: 'I design and build websites, online stores and custom software. End to end, minding every detail.',
-    see_projects: 'See projects',
-    signal_location: 'Colombia · GMT-5',
-    signal_stack: 'Landing pages · E-commerce · Custom software',
-    photo_alt: 'Milo Agudelo, full stack developer',
-  },
-} as const;
-
-type Strings = typeof STRINGS.es;
 const LocaleCtx = createContext<Strings>(STRINGS.es);
 const useS = () => useContext(LocaleCtx);
 
@@ -195,11 +156,13 @@ function MagneticLink({
 
 /* ── Navbar ──────────────────────────────────────────────────── */
 
+/* Flip `ready` to true when that section lands. One flag per section so
+   each can ship independently without resurrecting dead anchors. */
 const NAV_LINKS = [
-  { id: 'work',    key: 'nav_work' },
-  { id: 'about',   key: 'nav_about' },
-  { id: 'stack',   key: 'nav_stack' },
-  { id: 'contact', key: 'nav_contact' },
+  { id: 'work',    key: 'nav_work',    ready: false },
+  { id: 'about',   key: 'nav_about',   ready: false },
+  { id: 'stack',   key: 'nav_stack',   ready: false },
+  { id: 'contact', key: 'nav_contact', ready: false },
 ] as const;
 
 /* ── Mobile-only navbar intro ─────────────────────────────────────
@@ -336,17 +299,19 @@ function Navbar({ reduced }: { reduced: boolean }) {
         </span>
       </a>
 
-      <nav aria-label="Principal" className="hidden items-center gap-1 md:flex">
-        {NAV_LINKS.map(link => (
-          <a
-            key={link.id}
-            href={`#${link.id}`}
-            className="rounded-full px-4 py-2 text-sm font-semibold text-foreground/55 transition-colors duration-150 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary xl:px-5 xl:text-[15px]"
-          >
-            {s[link.key]}
-          </a>
-        ))}
-      </nav>
+      {NAV_LINKS.some(link => link.ready) && (
+        <nav aria-label="Principal" className="hidden items-center gap-1 md:flex">
+          {NAV_LINKS.filter(link => link.ready).map(link => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              className="rounded-full px-4 py-2 text-sm font-semibold text-foreground/55 transition-colors duration-150 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary xl:px-5 xl:text-[15px]"
+            >
+              {s[link.key]}
+            </a>
+          ))}
+        </nav>
+      )}
 
       <MagneticLink
         href={`https://cal.com/${s.cal_link}`}
@@ -606,15 +571,17 @@ function Hero({ images, reduced }: { images: HeroImages; reduced: boolean }) {
             <HugeiconsIcon icon={ArrowRight01Icon} size={15} aria-hidden="true" />
           </span>
         </MagneticLink>
-        <MagneticLink
-          href="#work"
-          reduced={reduced}
-          className="btn-glass-secondary flex h-12 w-full items-center justify-center rounded-full px-6 font-sans text-sm font-bold text-foreground sm:w-auto xl:h-[52px] xl:px-7 xl:text-[15px]"
-          contentClassName="flex items-center gap-2.5"
-        >
-          <HugeiconsIcon icon={FolderOpenIcon} size={16} strokeWidth={1.5} aria-hidden="true" />
-          {s.see_projects}
-        </MagneticLink>
+        {NAV_LINKS.find(link => link.id === 'work')?.ready && (
+          <MagneticLink
+            href="#work"
+            reduced={reduced}
+            className="btn-glass-secondary flex h-12 w-full items-center justify-center rounded-full px-6 font-sans text-sm font-bold text-foreground sm:w-auto xl:h-[52px] xl:px-7 xl:text-[15px]"
+            contentClassName="flex items-center gap-2.5"
+          >
+            <HugeiconsIcon icon={FolderOpenIcon} size={16} strokeWidth={1.5} aria-hidden="true" />
+            {s.see_projects}
+          </MagneticLink>
+        )}
       </motion.div>
 
       <motion.div
